@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -e ' *)",
+      "Bash(node --check _check.js)",
+      "Bash(rm _check.js)",
+      "Bash(start snake_game.html)"
+    ]
+  }
+}
