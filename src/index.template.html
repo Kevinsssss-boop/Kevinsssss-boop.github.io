@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>🐍 贪吃蛇大作战</title>
+<style>
+{{CSS}}
+</style>
+</head>
+<body>
+
+<canvas id="game"></canvas>
+<canvas id="minimap" width="140" height="105"></canvas>
+<div id="error-overlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:100;background:rgba(0,0,0,0.85);flex-direction:column;align-items:center;justify-content:center;color:#ff5252;font-family:'PingFang SC','Microsoft YaHei',sans-serif">
+  <div style="font-size:24px;font-weight:700;margin-bottom:12px">⚠ 游戏出错</div>
+  <div id="error-msg" style="font-size:14px;color:#ccc;max-width:80%;text-align:center;word-break:break-all"></div>
+  <button class="btn" style="margin-top:20px" onclick="location.reload()">🔄 刷新页面</button>
+</div>
+
+<!-- Home -->
+<div id="home" class="panel">
+  <h1>🐍 贪吃蛇大作战</h1>
+  <div class="sub">选择模式，开始对战</div>
+  <div class="mode-cards">
+    <div class="mode-card selected" data-mode="single" onclick="selectMode('single')">
+      <div class="icon">🕹️</div><div class="title">单人模式</div><div class="desc">与 NPC 蛇对战</div>
+    </div>
+    <div class="mode-card" data-mode="local" onclick="selectMode('local')">
+      <div class="icon">👥</div><div class="title">双人对战</div><div class="desc">同屏键盘对战</div>
+    </div>
+    <div class="mode-card" data-mode="endless" onclick="selectMode('endless')">
+      <div class="icon">♾️</div><div class="title">无尽模式</div><div class="desc">难度递增，看你能撑多久</div>
+    </div>
+    <div class="mode-card" data-mode="hunter" onclick="selectMode('hunter')">
+      <div class="icon">🔪</div><div class="title">猎人模式</div><div class="desc">扮演Boss大蛇猎杀NPC</div>
+    </div>
+  </div>
+
+  <!-- Step 1.6: Difficulty Selection -->
+  <div id="difficulty-row" style="display:flex;gap:6px;justify-content:center;margin:8px 0 14px;flex-wrap:wrap"></div>
+  <div class="btn-row">
+    <button class="btn" onclick="buildSkinGrid();showPanel('skin-panel')">🎨 皮肤</button>
+    <button class="btn" onclick="showAchievementPanel()">🏆 成就</button>
+    <button class="btn" onclick="showPanel('settings-panel')">⚙️ 设置</button>
+    <button class="btn primary" onclick="startGame()">▶ 开始游戏</button>
+  </div>
+</div>
+
+<!-- Skin -->
+<div id="skin-panel" class="panel hidden">
+  <h2>🎨 选择皮肤</h2>
+  <div class="skin-grid" id="skin-grid"></div>
+  <button class="btn primary" onclick="hidePanel('skin-panel')">✓ 确认</button>
+</div>
+
+<!-- Achievements -->
+<div id="achievements-panel" class="panel hidden">
+  <h2>🏆 成就 & 统计</h2>
+  <div class="ach-grid" id="ach-grid"></div>
+  <div class="ach-stats" id="ach-stats"></div>
+  <button class="btn primary" onclick="hideAchievementPanel()">✓ 确认</button>
+</div>
+
+<!-- Settings -->
+<div id="settings-panel" class="panel hidden">
+  <h2>⚙️ 设置</h2>
+
+  <!-- Audio -->
+  <div class="setting-group-title">🔊 音频</div>
+  <div class="setting-row"><span>音效</span><div class="toggle on" id="tgl-sfx" onclick="toggleSetting('sfx')"></div></div>
+  <div class="setting-row"><span>粒子特效</span><div class="toggle on" id="tgl-particles" onclick="toggleSetting('particles')"></div></div>
+  <div class="setting-row"><span>震动反馈</span><div class="toggle on" id="tgl-shake" onclick="toggleSetting('shake')"></div></div>
+
+  <!-- Controls (Step 1.3 + 1.8) -->
+  <div class="setting-group-title">🎮 控制</div>
+  <div class="setting-row">
+    <span>P1 控制模式</span>
+    <select id="sel-controlMode" onchange="setControlMode(this.value)" style="background:var(--surface);border:1px solid var(--border);color:var(--text);padding:4px 8px;border-radius:6px;font-size:12px;cursor:pointer">
+      <option value="mouse">🖱️ 鼠标</option>
+      <option value="keyboard">⌨️ 键盘(方向键)</option>
+    </select>
+  </div>
+
+  <!-- Display (Step 1.8) -->
+  <div class="setting-group-title">🖥️ 显示</div>
+  <div class="setting-row"><span>小地图</span><div class="toggle on" id="tgl-minimap" onclick="toggleSetting('minimap')"></div></div>
+  <div class="setting-row"><span>击杀信息</span><div class="toggle on" id="tgl-killfeed" onclick="toggleSetting('killfeed')"></div></div>
+  <div class="setting-row"><span>Combo 弹窗</span><div class="toggle on" id="tgl-combopop" onclick="toggleSetting('combopop')"></div></div>
+
+  <!-- Danger Zone: Reset Data -->
+  <button class="btn" onclick="confirmResetData()" style="margin-top:14px;color:#ff5252;border-color:#ff525244">🗑️ 清除所有数据</button>
+
+  <button class="btn primary" onclick="hidePanel('settings-panel')" style="margin-top:10px">✓ 确认</button>
+</div>
+
+<!-- Game Over -->
+<div id="game-over-panel" class="panel hidden">
+  <h2 id="go-title">游戏结束</h2>
+  <div class="winner" id="go-winner"></div>
+  <div class="result" id="go-result"></div>
+  <div class="stats" id="go-stats"></div>
+  <div class="leaderboard" id="go-lb"></div>
+  <div class="btn-row">
+    <button class="btn primary" onclick="startGame()">🔄 再来一局</button>
+    <button class="btn" onclick="backToHome()">🏠 主页</button>
+  </div>
+</div>
+
+<!-- HUD -->
+<div id="hud" class="hidden">
+  <div class="hud-box"><div class="hud-label">得分</div><div class="hud-val" style="background:linear-gradient(135deg,#ff6b6b,#ffd93d);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text" id="hud-score">0</div></div>
+  <div class="hud-box"><div class="hud-label">⏱ 时间</div><div class="hud-val" id="hud-time">3:00</div></div>
+  <div class="hud-box"><div class="hud-label">🥇 排名</div><div class="hud-val" style="color:#ffd740" id="hud-rank">1/9</div></div>
+  <div class="hud-box"><div class="hud-label">combo</div><div class="hud-val" style="color:#ff9100" id="hud-combo">-</div></div>
+</div>
+<div id="hud-fuel" class="hidden"><span class="bar-label">⚡</span><div class="bar-bg"><div class="bar-fill" id="fuel-fill" style="width:100%"></div></div></div>
+<div id="hud-powerup" class="hidden"></div>
+
+<button id="btn-pause" class="hidden" onclick="togglePause()">⏸ 暂停<span class="key">P</span></button>
+<div id="kill-feed"></div>
+
+<!-- Virtual Joystick (mobile) -->
+<div id="vjoy-base"></div><div id="vjoy-knob"></div>
+<div id="vjoy-zone" oncontextmenu="return false"></div>
+<div id="boost-btn">BOOST</div>
+
+<script>
+{{JS}}
+</script>
+</body>
+</html>

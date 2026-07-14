@@ -1,0 +1,5 @@
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a18;--surface:rgba(255,255,255,0.04);--border:rgba(255,255,255,0.1);--text:#ccc;--text-dim:#888;--accent:#00E676;--danger:#ff5252}
+body{background:var(--bg);font-family:'PingFang SC','Microsoft YaHei',sans-serif;overflow:hidden;user-select:none;-webkit-user-select:none;touch-action:none;-webkit-tap-highlight-color:transparent;color:var(--text)}
+canvas#game{display:block;position:fixed;top:0;left:0;z-index:1}
+canvas#minimap{position:fixed;bottom:12px;right:12px;border:2px solid var(--border);border-radius:10px;z-index:40;pointer-events:none;opacity:0.75}
