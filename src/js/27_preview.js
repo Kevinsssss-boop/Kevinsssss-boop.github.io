@@ -421,9 +421,29 @@ function buildSkinGrid() {
     d.appendChild(nm);
     if (!sk.locked) {
       d.onclick = () => { playerSkin = sk; saveSetting('skin', sk.id); buildSkinGrid(); };
+    } else {
+      d.onclick = () => showSkinLockHint(sk, d);
     }
     g.appendChild(d);
   });
+}
+
+function showSkinLockHint(skin, element) {
+  // Remove any existing hint
+  document.querySelectorAll('.skin-lock-hint').forEach(el => el.remove());
+  // Find the required achievement
+  const ach = ACHIEVEMENTS.find(a => a.id === skin.unlockAch);
+  if (!ach) return;
+  const hint = document.createElement('div');
+  hint.className = 'skin-lock-hint';
+  hint.innerHTML = `<span style="font-size:16px">🔒</span> 达成 <b>${ach.icon} ${ach.name}</b> 后解锁<span style="color:var(--text-dim);margin-left:4px">— ${ach.desc}</span>`;
+  document.body.appendChild(hint);
+  // Position under the skin card
+  const rect = element.getBoundingClientRect();
+  hint.style.left = rect.left + rect.width / 2 + 'px';
+  hint.style.top = (rect.bottom + 8) + 'px';
+  // Fade out
+  setTimeout(() => { hint.style.opacity = '0'; setTimeout(() => hint.remove(), 300); }, 2200);
 }
 // buildSkinGrid() called from init() after all modules loaded
 

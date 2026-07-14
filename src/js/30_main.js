@@ -63,7 +63,7 @@ function startGame() {
   // Fade out home panel with transition
   const homePanel = document.getElementById('home');
   const startAfterFade = () => {
-    ['home', 'skin-panel', 'settings-panel', 'game-over-panel'].forEach(id => hidePanel(id));
+    ['home', 'skin-panel', 'settings-panel', 'game-over-panel', 'tutorial-panel', 'achievements-panel'].forEach(id => hidePanel(id));
     homePanel.classList.remove('fading');
     document.getElementById('hud').classList.remove('hidden');
     document.getElementById('hud-fuel').classList.remove('hidden');
@@ -246,4 +246,23 @@ function showAchievementPanel() {
 }
 function hideAchievementPanel() {
   hidePanel('achievements-panel');
+}
+
+// ---- Tutorial Panel ----
+function showTutorialPanel() {
+  showPanel('tutorial-panel');
+  // Reset to first tab
+  switchTutorialTab('controls');
+  document.querySelectorAll('.tut-tab').forEach((t, i) => t.classList.toggle('active', i === 0));
+}
+function hideTutorialPanel() {
+  hidePanel('tutorial-panel');
+}
+function switchTutorialTab(name) {
+  document.querySelectorAll('.tut-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tut-page').forEach(p => p.classList.remove('active'));
+  const tab = document.querySelector(`.tut-tab[onclick*="${name}"]`);
+  const page = document.querySelector(`.tut-page[data-tut="${name}"]`);
+  if (tab) tab.classList.add('active');
+  if (page) page.classList.add('active');
 }

@@ -109,9 +109,11 @@ canvas#minimap{position:fixed;bottom:12px;right:12px;border:2px solid var(--bord
 .stat-item{background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12px;color:#bbb;font-weight:500}
 
 /* Locked skin */
-.skin-card.locked{opacity:0.4;filter:grayscale(0.6)}
+.skin-card.locked{opacity:0.4;filter:grayscale(0.6);cursor:pointer}
 .skin-card.locked:hover{opacity:0.55}
 .skin-card.locked .skin-name::after{content:' 🔒';font-size:10px}
+/* Lock hint toast */
+.skin-lock-hint{position:fixed;z-index:60;pointer-events:none;background:rgba(10,10,30,0.94);border:1px solid rgba(255,215,0,0.25);border-radius:10px;padding:10px 16px;color:#ddd;font-size:12px;transform:translateX(-50%);white-space:nowrap;box-shadow:0 4px 18px rgba(0,0,0,0.55);transition:opacity .3s;animation:hint-in .25s ease-out;max-width:320px;text-align:center}
 
 /* Achievement popup */
 .ach-popup{position:fixed;top:60px;left:50%;transform:translateX(-50%);z-index:90;pointer-events:none;background:rgba(10,10,30,0.92);border:2px solid rgba(0,230,118,0.5);border-radius:14px;padding:12px 22px;display:flex;align-items:center;gap:12px;color:#fff;font-size:14px;box-shadow:0 6px 24px rgba(0,230,118,0.25);animation:combo-up 3s ease-out forwards;transition:opacity .4s}
@@ -119,6 +121,102 @@ canvas#minimap{position:fixed;bottom:12px;right:12px;border:2px solid var(--bord
 
 /* Event announcement */
 .event-announce{position:fixed;top:40px;left:50%;transform:translateX(-50%);z-index:85;pointer-events:none;background:rgba(10,10,30,0.9);border:2px solid #ffd740;border-radius:14px;padding:10px 24px;text-align:center;color:#fff;font-size:13px;box-shadow:0 4px 20px rgba(0,0,0,0.5);animation:combo-up 2.4s ease-out forwards;transition:opacity .4s}
+
+/* ===== Tutorial Panel ===== */
+#tutorial-panel{background:rgba(0,0,0,0.88);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);overflow-y:auto;justify-content:flex-start;padding:30px 20px 40px}
+#tutorial-panel h2{color:#fff;font-size:26px;margin-bottom:16px;text-align:center}
+.tutorial-container{width:100%;max-width:680px;margin:0 auto}
+/* Tab bar */
+.tut-tabs{display:flex;gap:6px;justify-content:center;margin-bottom:20px;flex-wrap:wrap}
+.tut-tab{background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--text-dim);padding:9px 14px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;font-family:inherit}
+.tut-tab:hover{background:rgba(255,255,255,0.08);color:#fff}
+.tut-tab.active{background:rgba(0,188,212,0.15);border-color:#00BCD4;color:#fff}
+/* Tab content */
+.tut-page{display:none;animation:tut-fadeIn .25s ease}
+.tut-page.active{display:block}
+@keyframes tut-fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+/* Section cards */
+.tut-section{margin-bottom:16px}
+.tut-section-title{font-size:15px;font-weight:700;color:#fff;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.tut-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px}
+.tut-card{background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:12px;padding:12px 14px;display:flex;align-items:flex-start;gap:10px;transition:all .2s}
+.tut-card:hover{background:rgba(255,255,255,0.07)}
+.tut-card .tc-icon{font-size:28px;flex-shrink:0;width:36px;text-align:center;line-height:1.2}
+.tut-card .tc-info{flex:1;min-width:0}
+.tut-card .tc-name{font-size:13px;font-weight:700;color:#fff;display:block}
+.tut-card .tc-desc{font-size:11px;color:var(--text-dim);line-height:1.5;margin-top:2px}
+.tut-card .tc-extra{font-size:10px;color:#888;margin-top:3px;display:flex;flex-wrap:wrap;gap:4px}
+.tut-card .tc-tag{display:inline-block;background:rgba(255,255,255,0.06);padding:2px 8px;border-radius:5px;font-size:10px;color:var(--text-dim)}
+.tut-tag-accent{color:#ffd740!important;background:rgba(255,215,64,0.1)!important}
+.tut-tag-danger{color:#ff5252!important;background:rgba(255,82,82,0.1)!important}
+.tut-tag-info{color:#40c4ff!important;background:rgba(64,196,255,0.1)!important}
+/* Full-width cards */
+.tut-cards-full .tut-card{grid-column:1/-1}
+/* Mode cards in tutorial */
+.tut-mode-list{display:flex;flex-direction:column;gap:8px}
+.tut-mode-card{background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:12px;padding:14px 16px;display:flex;align-items:flex-start;gap:12px;transition:all .2s}
+.tut-mode-card:hover{background:rgba(255,255,255,0.07)}
+.tut-mode-card .tm-icon{font-size:36px;flex-shrink:0}
+.tut-mode-card .tm-name{font-size:14px;font-weight:700;color:#fff;display:block}
+.tut-mode-card .tm-desc{font-size:11px;color:var(--text-dim);line-height:1.5;margin-top:2px}
+.tut-mode-card .tm-tags{margin-top:4px;display:flex;flex-wrap:wrap;gap:4px}
+/* Difficulty table in tutorial */
+.tut-diff-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}
+.tut-diff-card{background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;padding:10px 12px;text-align:center}
+.tut-diff-card .td-icon{font-size:24px;display:block;margin-bottom:2px}
+.tut-diff-card .td-name{font-size:13px;font-weight:700;color:#fff;display:block}
+.tut-diff-card .td-stats{font-size:10px;color:var(--text-dim);line-height:1.6;margin-top:3px}
+/* Achievement cards in tutorial */
+.tut-ach-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px}
+.tut-ach-card{background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:10px}
+.tut-ach-card .ta-icon{font-size:28px;flex-shrink:0}
+.tut-ach-card .ta-name{font-size:12px;font-weight:700;color:#fff;display:block}
+.tut-ach-card .ta-desc{font-size:10px;color:var(--text-dim)}
+/* Close button */
+.tut-close{position:absolute;top:16px;right:20px;background:none;border:none;color:var(--text-dim);font-size:24px;cursor:pointer;padding:6px 10px;border-radius:8px;transition:all .2s;font-family:inherit;line-height:1}
+.tut-close:hover{color:#fff;background:rgba(255,255,255,0.08)}
+
+/* ===== Tutorial Skin List ===== */
+.tut-skin-list{display:flex;flex-direction:column;gap:10px}
+.tut-skin-row{display:flex;align-items:center;gap:14px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:14px;padding:12px 16px;transition:all .2s}
+.tut-skin-row:hover{background:rgba(255,255,255,0.06)}
+/* Mini snake preview — simulates in-game look */
+.tut-skin-preview{position:relative;flex-shrink:0;width:72px;height:32px}
+.tut-skin-preview .s-body{position:absolute;top:8px;left:18px;width:50px;height:16px;border-radius:10px}
+.tut-skin-preview .s-head{position:absolute;top:3px;left:0;width:26px;height:26px;border-radius:50%}
+.tut-skin-preview .s-eye{position:absolute;top:9px;left:14px;width:7px;height:7px;background:#fff;border-radius:50%}
+.tut-skin-preview .s-pupil{position:absolute;top:10px;left:16px;width:3.5px;height:3.5px;background:#111;border-radius:50%}
+.tut-skin-preview .s-shine{position:absolute;top:5px;left:10px;width:5px;height:5px;background:rgba(255,255,255,0.4);border-radius:50%}
+/* Style-specific preview effects */
+.tut-skin-preview.style-neon .s-body{box-shadow:0 0 14px 3px var(--s-glow)}
+.tut-skin-preview.style-neon .s-head{box-shadow:0 0 14px 3px var(--s-glow)}
+.tut-skin-preview.style-pixel .s-body{border-radius:3px}
+.tut-skin-preview.style-pixel .s-head{border-radius:3px}
+.tut-skin-preview.style-metallic .s-body{background:linear-gradient(180deg,var(--s-head) 0%,var(--s-body) 30%,#fff 50%,var(--s-body) 70%,var(--s-dark) 100%)!important}
+.tut-skin-preview.style-metallic .s-head{background:linear-gradient(135deg,#fff 0%,var(--s-head) 40%,var(--s-dark) 100%)!important}
+.tut-skin-preview.style-dragon .s-head{box-shadow:0 0 10px 2px rgba(255,215,0,0.5)}
+.tut-skin-preview.style-dragon .s-body{background:linear-gradient(90deg,var(--s-head),var(--s-body),var(--s-dark))!important}
+.tut-skin-preview.style-dragon::after{content:'';position:absolute;top:-3px;left:6px;width:6px;height:8px;background:var(--s-head);border-radius:40% 40% 0 0;transform:rotate(-15deg)}
+.tut-skin-preview.style-dragon::before{content:'';position:absolute;top:-3px;left:15px;width:6px;height:8px;background:var(--s-head);border-radius:40% 40% 0 0;transform:rotate(15deg)}
+.tut-skin-preview.style-galaxy .s-body{background:linear-gradient(90deg,#4a0080,#7b2cbf,#c77dff,#7b2cbf)!important;box-shadow:0 0 8px 2px rgba(199,125,255,0.3)}
+.tut-skin-preview.style-galaxy .s-head{background:radial-gradient(circle at 40% 35%,#c77dff,#7b2cbf)!important}
+.tut-skin-preview.style-cartoon .s-body{border-radius:14px;border:2px solid rgba(255,255,255,0.2)}
+.tut-skin-preview.style-cartoon .s-head{border:2px solid rgba(255,255,255,0.2)}
+.tut-skin-preview.style-cartoon .s-eye{width:9px;height:9px;top:7px;left:13px;background:#fff}
+.tut-skin-preview.style-cartoon .s-pupil{width:5px;height:5px;top:8px;left:15px;background:#111}
+.tut-skin-preview.style-cartoon::after{content:'';position:absolute;top:18px;left:9px;width:8px;height:4px;border-bottom:2px solid rgba(0,0,0,0.3);border-radius:0 0 50% 50%}
+.tut-skin-preview.style-lava .s-body{background:linear-gradient(90deg,#ff8c00,#ff4500,#8b0000)!important;box-shadow:0 0 10px 2px rgba(255,69,0,0.4)}
+.tut-skin-preview.style-lava .s-head{background:radial-gradient(circle at 40% 35%,#ffcc00,#ff4500)!important}
+.tut-skin-preview.style-ice .s-body{background:linear-gradient(180deg,#e0ffff,#87ceeb,#4682b4)!important;box-shadow:0 0 8px 2px rgba(135,206,235,0.35)}
+.tut-skin-preview.style-ice .s-head{background:radial-gradient(circle at 40% 35%,#fff,#87ceeb)!important}
+/* Skin row info */
+.tut-skin-row .ts-info{flex:1;min-width:0}
+.tut-skin-row .ts-name{font-size:14px;font-weight:700;color:#fff;display:block}
+.tut-skin-row .ts-desc{font-size:11px;color:var(--text-dim);margin-top:1px}
+.tut-skin-row .ts-unlock{font-size:11px;margin-top:3px;display:flex;align-items:center;gap:5px}
+.tut-skin-row .ts-tag{display:inline-block;padding:2px 8px;border-radius:5px;font-size:10px}
+.tut-skin-row .ts-tag.free{background:rgba(0,230,118,0.12);color:#69f0ae}
+.tut-skin-row .ts-tag.locked{background:rgba(255,255,255,0.05);color:var(--text-dim)}
 
 @keyframes pulse-icon{0%,100%{transform:translateX(-50%) scale(1)}50%{transform:translateX(-50%) scale(1.2)}}
 @keyframes kill-in{from{transform:translateX(60px);opacity:0}to{transform:translateX(0);opacity:1}}
@@ -194,6 +292,7 @@ canvas#minimap{position:fixed;bottom:12px;right:12px;border:2px solid var(--bord
     <button class="btn" onclick="buildSkinGrid();showPanel('skin-panel')">🎨 皮肤</button>
     <button class="btn" onclick="showAchievementPanel()">🏆 成就</button>
     <button class="btn" onclick="showPanel('settings-panel')">⚙️ 设置</button>
+    <button class="btn" onclick="showTutorialPanel()">📖 教程</button>
     <button class="btn primary" onclick="startGame()">▶ 开始游戏</button>
   </div>
 </div>
@@ -243,6 +342,183 @@ canvas#minimap{position:fixed;bottom:12px;right:12px;border:2px solid var(--bord
   <button class="btn" onclick="confirmResetData()" style="margin-top:14px;color:#ff5252;border-color:#ff525244">🗑️ 清除所有数据</button>
 
   <button class="btn primary" onclick="hidePanel('settings-panel')" style="margin-top:10px">✓ 确认</button>
+</div>
+
+<!-- Tutorial -->
+<div id="tutorial-panel" class="panel hidden">
+  <button class="tut-close" onclick="hideTutorialPanel()">✕</button>
+  <h2>📖 新手指南</h2>
+  <div class="tutorial-container">
+    <div class="tut-tabs">
+      <button class="tut-tab active" onclick="switchTutorialTab('controls')">🎮 操作</button>
+      <button class="tut-tab" onclick="switchTutorialTab('modes')">🕹️ 模式</button>
+      <button class="tut-tab" onclick="switchTutorialTab('items')">🎒 道具</button>
+      <button class="tut-tab" onclick="switchTutorialTab('food')">🍎 食物</button>
+      <button class="tut-tab" onclick="switchTutorialTab('mechanics')">⚙️ 机制</button>
+      <button class="tut-tab" onclick="switchTutorialTab('skins')">🎨 皮肤 & 成就</button>
+    </div>
+
+    <!-- Tab: 操作 -->
+    <div class="tut-page active" data-tut="controls">
+      <div class="tut-section">
+        <div class="tut-section-title">🖱️ 移动控制</div>
+        <div class="tut-cards">
+          <div class="tut-card"><span class="tc-icon">🖱️</span><div class="tc-info"><span class="tc-name">鼠标模式</span><span class="tc-desc">移动鼠标控制蛇的方向，蛇头始终朝向光标位置</span><span class="tc-tag tut-tag-info">默认</span></div></div>
+          <div class="tut-card"><span class="tc-icon">⌨️</span><div class="tc-info"><span class="tc-name">键盘模式</span><span class="tc-desc">方向键 ↑↓←→ 控制移动，8方向精准操控</span><span class="tc-tag">设置切换</span></div></div>
+          <div class="tut-card"><span class="tc-icon">📱</span><div class="tc-info"><span class="tc-name">虚拟摇杆</span><span class="tc-desc">手机端自动启用，左半屏滑动操控方向</span><span class="tc-tag tut-tag-info">自动</span></div></div>
+          <div class="tut-card"><span class="tc-icon">👥</span><div class="tc-info"><span class="tc-name">双人模式 P2</span><span class="tc-desc">W A S D 移动 + Tab 加速，同屏对战</span></div></div>
+        </div>
+      </div>
+      <div class="tut-section">
+        <div class="tut-section-title">⚡ 加速 (Boost)</div>
+        <div class="tut-cards">
+          <div class="tut-card"><span class="tc-icon">␣</span><div class="tc-info"><span class="tc-name">空格 / Shift</span><span class="tc-desc">按住加速，速度从 175 → 320，消耗燃料</span><span class="tc-tag tut-tag-accent">核心操作</span></div></div>
+          <div class="tut-card"><span class="tc-icon">🔋</span><div class="tc-info"><span class="tc-name">燃料管理</span><span class="tc-desc">上限 3 秒，自动回复 0.35/秒。猎人模式 ×3 倍</span></div></div>
+          <div class="tut-card"><span class="tc-icon">📱</span><div class="tc-info"><span class="tc-name">手机 Boost</span><span class="tc-desc">按住右下角 BOOST 按钮即可加速</span></div></div>
+        </div>
+      </div>
+      <div class="tut-section">
+        <div class="tut-section-title">⌨️ 快捷键</div>
+        <div class="tut-cards">
+          <div class="tut-card"><span class="tc-icon">P</span><div class="tc-info"><span class="tc-name">暂停 / 继续</span><span class="tc-desc">游戏中按 P 键暂停或恢复</span></div></div>
+          <div class="tut-card"><span class="tc-icon">Esc</span><div class="tc-info"><span class="tc-name">返回主页</span><span class="tc-desc">游戏进行中按 Esc 直接退出</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab: 模式 -->
+    <div class="tut-page" data-tut="modes">
+      <div class="tut-mode-list">
+        <div class="tut-mode-card"><span class="tm-icon">🕹️</span><div class="tc-info"><span class="tm-name">单人模式</span><span class="tm-desc">经典对战，与 10 条 NPC 蛇同场竞技。限时 180 秒，按分数排名。</span><div class="tm-tags"><span class="tc-tag">限时3分钟</span><span class="tc-tag">缩圈机制</span><span class="tc-tag">难度可选</span></div></div></div>
+        <div class="tut-mode-card"><span class="tm-icon">👥</span><div class="tc-info"><span class="tm-name">双人对战</span><span class="tm-desc">两名玩家同屏对战 + NPC。P1 鼠标/键盘，P2 用 WASD + Tab 加速。</span><div class="tm-tags"><span class="tc-tag">限时3分钟</span><span class="tc-tag">同屏对战</span></div></div></div>
+        <div class="tut-mode-card"><span class="tm-icon">♾️</span><div class="tc-info"><span class="tm-name">无尽模式</span><span class="tm-desc">没有时间限制，难度持续递增。每 60s 增加 2 个 NPC + 提速 5%。活到最后的才是赢家！</span><div class="tm-tags"><span class="tc-tag">无限时长</span><span class="tc-tag">难度递增</span><span class="tc-tag">随机事件</span></div></div></div>
+        <div class="tut-mode-card"><span class="tm-icon">🔪</span><div class="tc-info"><span class="tm-name">猎人模式</span><span class="tm-desc">你扮演 Boss！初始 200 段身体，1.5x 永久加速，3 倍燃料。所有 NPC 见你就跑。120 秒内尽可能多杀！</span><div class="tm-tags"><span class="tc-tag tut-tag-accent">Boss体验</span><span class="tc-tag">200段开局</span><span class="tc-tag">限时120秒</span></div></div></div>
+      </div>
+      <div class="tut-section" style="margin-top:16px">
+        <div class="tut-section-title">📊 难度选择</div>
+        <div class="tut-diff-grid">
+          <div class="tut-diff-card"><span class="td-icon">🟢</span><span class="td-name">简单</span><span class="td-stats">6 NPC<br>速度 90-150<br>初始长度 22<br>食物 ×1.3</span></div>
+          <div class="tut-diff-card"><span class="td-icon">🔵</span><span class="td-name">普通</span><span class="td-stats">10 NPC<br>速度 120-260<br>初始长度 16<br>食物 ×1.1</span></div>
+          <div class="tut-diff-card"><span class="td-icon">🟠</span><span class="td-name">困难</span><span class="td-stats">13 NPC<br>速度 170-290<br>初始长度 12<br>食物 ×0.95</span></div>
+          <div class="tut-diff-card"><span class="td-icon">🔴</span><span class="td-name">疯狂</span><span class="td-stats">16 NPC<br>速度 210-330<br>初始长度 9<br>全部Aggressive</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab: 道具 -->
+    <div class="tut-page" data-tut="items">
+      <div class="tut-cards">
+        <div class="tut-card"><span class="tc-icon">⚡</span><div class="tc-info"><span class="tc-name">加速</span><span class="tc-desc">速度翻倍，持续 5 秒。适合追杀和逃生</span><span class="tc-tag tut-tag-accent">5秒</span></div></div>
+        <div class="tut-card"><span class="tc-icon">🛡️</span><div class="tc-info"><span class="tc-name">护盾</span><span class="tc-desc">免疫一次致命碰撞！被撞后护盾破碎抵消伤害</span><span class="tc-tag tut-tag-info">8秒</span><span class="tc-tag tut-tag-accent">保命神器</span></div></div>
+        <div class="tut-card"><span class="tc-icon">🧲</span><div class="tc-info"><span class="tc-name">磁铁</span><span class="tc-desc">自动吸引附近食物，拾取范围 ×3.5 倍</span><span class="tc-tag tut-tag-info">6秒</span></div></div>
+        <div class="tut-card"><span class="tc-icon">👻</span><div class="tc-info"><span class="tc-name">幽灵</span><span class="tc-desc">可以穿过其他蛇的身体，不会碰撞死亡！</span><span class="tc-tag tut-tag-info">5秒</span><span class="tc-tag tut-tag-accent">无敌穿透</span></div></div>
+      </div>
+      <div class="tut-section" style="margin-top:14px">
+        <div class="tut-section-title">💡 道具小知识</div>
+        <div class="tut-cards tut-cards-full">
+          <div class="tut-card"><span class="tc-icon">📌</span><div class="tc-info"><span class="tc-name">刷新规律</span><span class="tc-desc">每 18-30 秒在地图随机位置刷新一个，最多同时存在 3 个。只有玩家可以拾取，NPC 也会朝道具移动拦截。</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab: 食物 -->
+    <div class="tut-page" data-tut="food">
+      <div class="tut-cards">
+        <div class="tut-card"><span class="tc-icon">🟠🔴🟡</span><div class="tc-info"><span class="tc-name">普通食物</span><span class="tc-desc">彩色圆点，10-25 分。地图保持 150 个，吃完自动补充</span><span class="tc-tag">基础</span></div></div>
+        <div class="tut-card"><span class="tc-icon">🥇</span><div class="tc-info"><span class="tc-name">金色食物</span><span class="tc-desc">金色发光，50 分。吃掉获得 2.5 秒加速效果！出现概率 4%</span><span class="tc-tag tut-tag-accent">稀有</span></div></div>
+        <div class="tut-card"><span class="tc-icon">🍆</span><div class="tc-info"><span class="tc-name">高风险食物</span><span class="tc-desc">紫色大圆发光，200 分！但会暴露位置 5 秒 + 减速 2 秒。出现概率 2%</span><span class="tc-tag tut-tag-accent">200分</span><span class="tc-tag tut-tag-danger">高风险</span></div></div>
+        <div class="tut-card"><span class="tc-icon">💀➡️🍖</span><div class="tc-info"><span class="tc-name">击杀掉落</span><span class="tc-desc">击杀蛇后掉落大量食物（25-55 分/个），颜色为被杀蛇的 glow 色</span><span class="tc-tag">掉落</span></div></div>
+      </div>
+      <div class="tut-section" style="margin-top:14px">
+        <div class="tut-section-title">🔥 Combo 连击</div>
+        <div class="tut-cards tut-cards-full">
+          <div class="tut-card"><span class="tc-icon">🔥</span><div class="tc-info"><span class="tc-name">连续吃食物触发连击</span><span class="tc-desc">4 秒内连续吃食物累积 Combo，每 3 连击 +0.5x 分数倍率，最高 5x！达成 8x Combo 还能解锁成就和皮肤。</span><span class="tc-tag tut-tag-accent">最高5倍分数</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab: 机制 -->
+    <div class="tut-page" data-tut="mechanics">
+      <div class="tut-section">
+        <div class="tut-section-title">⏱️ 缩圈（Battle Royale）</div>
+        <div class="tut-cards tut-cards-full">
+          <div class="tut-card"><span class="tc-icon">🔴</span><div class="tc-info"><span class="tc-name">最后 60 秒开始收缩，最后 10 秒仅剩 40% 安全区</span><span class="tc-desc">红色边界线向内收缩，越界立即死亡。仅限单人/双人模式。注意小地图红色危险区域！</span><span class="tc-tag tut-tag-danger">越界即死</span></div></div>
+        </div>
+      </div>
+      <div class="tut-section">
+        <div class="tut-section-title">👑 悬赏系统</div>
+        <div class="tut-cards tut-cards-full">
+          <div class="tut-card"><span class="tc-icon">👑</span><div class="tc-info"><span class="tc-name">全场最高分蛇头顶出现金色王冠</span><span class="tc-desc">击杀悬赏蛇获得 3 倍分数奖励！但如果你是悬赏蛇，所有 NPC 都会盯上你……小地图上悬赏蛇显示为金色大点。</span><span class="tc-tag tut-tag-accent">3倍击杀分</span></div></div>
+        </div>
+      </div>
+      <div class="tut-section">
+        <div class="tut-section-title">🎲 随机事件</div>
+        <div class="tut-cards">
+          <div class="tut-card"><span class="tc-icon">🌧️</span><div class="tc-info"><span class="tc-name">食物雨</span><span class="tc-desc">地图降下 30 个额外食物</span><span class="tc-tag">12秒</span></div></div>
+          <div class="tut-card"><span class="tc-icon">⚡</span><div class="tc-info"><span class="tc-name">速度狂潮</span><span class="tc-desc">所有蛇 ×1.5 速，Boost 不耗燃料</span><span class="tc-tag tut-tag-accent">10秒</span></div></div>
+          <div class="tut-card"><span class="tc-icon">👻</span><div class="tc-info"><span class="tc-name">幽灵时刻</span><span class="tc-desc">所有蛇获得穿身能力</span><span class="tc-tag tut-tag-info">8秒</span></div></div>
+          <div class="tut-card"><span class="tc-icon">🧲</span><div class="tc-info"><span class="tc-name">磁暴</span><span class="tc-desc">食物缓慢移向最近的蛇</span><span class="tc-tag">10秒</span></div></div>
+          <div class="tut-card"><span class="tc-icon">💀</span><div class="tc-info"><span class="tc-name">末日边缘</span><span class="tc-desc">地图四周出现致命红色区域</span><span class="tc-tag tut-tag-danger">12秒</span></div></div>
+        </div>
+      </div>
+      <div class="tut-section">
+        <div class="tut-section-title">🤖 NPC 性格</div>
+        <div class="tut-cards">
+          <div class="tut-card"><span class="tc-icon">🔴</span><div class="tc-info"><span class="tc-name">猎手 Hunter</span><span class="tc-desc">主动追击小蛇，预判走位。吃爽了/刚杀了蛇/体型前3时触发</span></div></div>
+          <div class="tut-card"><span class="tc-icon">🟡</span><div class="tc-info"><span class="tc-name">清道夫 Scavenger</span><span class="tc-desc">避开威胁，攻击弱小猎物，寻找道具和食物</span></div></div>
+          <div class="tut-card"><span class="tc-icon">🟢</span><div class="tc-info"><span class="tc-name">幸存者 Survivor</span><span class="tc-desc">逃跑优先，远离一切威胁。差点被杀死时强制切换</span></div></div>
+          <div class="tut-card"><span class="tc-icon">⚪</span><div class="tc-info"><span class="tc-name">均衡 Balanced</span><span class="tc-desc">随机应变，综合判断局势做出最优选择</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab: 皮肤 & 成就 -->
+    <div class="tut-page" data-tut="skins">
+      <div class="tut-section">
+        <div class="tut-section-title">🎨 皮肤图鉴 <span style="font-size:11px;color:var(--text-dim);font-weight:400">— 共 16 款，达成成就即可解锁</span></div>
+        <div class="tut-skin-list">
+          <!-- 默认解锁 -->
+          <div class="tut-skin-row"><div class="tut-skin-preview"><div class="s-head" style="background:#00c853"></div><div class="s-body" style="background:#00E676"></div><div class="s-eye"></div><div class="s-pupil"></div><div class="s-shine"></div></div><div class="ts-info"><span class="ts-name">🟢 翠绿</span><span class="ts-desc">经典风格 · 默认蛇皮</span></div><span class="ts-tag free">默认解锁</span></div>
+          <div class="tut-skin-row"><div class="tut-skin-preview"><div class="s-head" style="background:#2979ff"></div><div class="s-body" style="background:#448aff"></div><div class="s-eye"></div><div class="s-pupil"></div><div class="s-shine"></div></div><div class="ts-info"><span class="ts-name">🔵 海洋</span><span class="ts-desc">经典风格 · 深邃海蓝</span></div><span class="ts-tag free">默认解锁</span></div>
+          <div class="tut-skin-row"><div class="tut-skin-preview"><div class="s-head" style="background:#f06292"></div><div class="s-body" style="background:#ff80ab"></div><div class="s-eye"></div><div class="s-pupil"></div><div class="s-shine"></div></div><div class="ts-info"><span class="ts-name">🩷 粉红</span><span class="ts-desc">经典风格 · 甜美粉色</span></div><span class="ts-tag free">默认解锁</span></div>
+          <div class="tut-skin-row"><div class="tut-skin-preview"><div class="s-head" style="background:#ffc400"></div><div class="s-body" style="background:#ffd740"></div><div class="s-eye"></div><div class="s-pupil"></div><div class="s-shine"></div></div><div class="ts-info"><span class="ts-name">🟡 金色</span><span class="ts-desc">经典风格 · 闪耀金色</span></div><span class="ts-tag free">默认解锁</span></div>
+          <div class="tut-skin-row"><div class="tut-skin-preview"><div class="s-head" style="background:#7c4dff"></div><div class="s-body" style="background:#b388ff"></div><div class="s-eye"></div><div class="s-pupil"></div><div class="s-shine"></div></div><div class="ts-info"><span class="ts-name">🟣 紫韵</span><span class="ts-desc">经典风格 · 梦幻紫色</span></div><span class="ts-tag free">默认解锁</span></div>
+          <!-- 成就解锁 - 经典 -->
+          <div class="tut-skin-row"><div class="tut-skin-preview"><div class="s-head" style="background:#ff1744"></div><div class="s-body" style="background:#ff5252"></div><div class="s-eye"></div><div class="s-pupil"></div><div class="s-shine"></div></div><div class="ts-info"><span class="ts-name">🔴 赤焰</span><span class="ts-desc">经典风格 · 烈焰红色</span><div class="ts-unlock">🔓 达成 <b>💀 首杀</b> 解锁</div></div><span class="ts-tag locked">🔒 锁定</span></div>
+          <div class="tut-skin-row"><div class="tut-skin-preview"><div class="s-head" style="background:#00e5ff"></div><div class="s-body" style="background:#18ffff"></div><div class="s-eye"></div><div class="s-pupil"></div><div class="s-shine"></div></div><div class="ts-info"><span class="ts-name">🔵 冰霜</span><span class="ts-desc">经典风格 · 极寒青色</span><div class="ts-unlock">🔓 达成 <b>🔰 新手蛇</b> 解锁</div></div><span class="ts-tag locked">🔒 锁定</span></div>
+          <div class="tut-skin-row"><div class="tut-skin-preview"><div class="s-head" style="background:#ff6d00"></div><div class="s-body" style="background:#ff9100"></div><div class="s-eye"></div><div class="s-pupil"></div><div class="s-shine"></div></div><div class="ts-info"><span class="ts-name">🟠 甜橙</span><span class="ts-desc">经典风格 · 温暖橙色</span><div class="ts-unlock">🔓 达成 <b>👑 王者</b> 解锁</div></div><span class="ts-tag locked">🔒 锁定</span></div>
+          <!-- 成就解锁 - 特效 -->
+          <div class="tut-skin-row"><div class="tut-skin-preview style-neon" style="--s-glow:#00ffff"><div class="s-head" style="background:#e0ffff"></div><div class="s-body" style="background:#00ffff"></div><div class="s-eye"></div><div class="s-pupil"></div><div class="s-shine"></div></div><div class="ts-info"><span class="ts-name">💜 霓虹</span><span class="ts-desc">霓虹特效 · 发光粒子拖尾</span><div class="ts-unlock">🔓 达成 <b>🗡️ 巨人杀手</b> 解锁</div></div><span class="ts-tag locked">🔒 锁定</span></div>
+          <div class="tut-skin-row"><div class="tut-skin-preview style-pixel"><div class="s-head" style="background:#00c853"></div><div class="s-body" style="background:#00E676"></div><div class="s-eye"></div><div class="s-pupil"></div><div class="s-shine"></div></div><div class="ts-info"><span class="ts-name">🟩 像素</span><span class="ts-desc">像素方块风 · 复古游戏感</span><div class="ts-unlock">🔓 达成 <b>🍽️ 大胃王</b> 解锁</div></div><span class="ts-tag locked">🔒 锁定</span></div>
+          <div class="tut-skin-row"><div class="tut-skin-preview style-metallic" style="--s-body:#c0c0c0;--s-head:#e8e8e8;--s-dark:#505050"><div class="s-head" style="background:linear-gradient(135deg,#fff,#e8e8e8,#505050)"></div><div class="s-body" style="background:linear-gradient(180deg,#e8e8e8,#c0c0c0,#fff,#c0c0c0,#505050)"></div><div class="s-eye"></div><div class="s-pupil"></div><div class="s-shine"></div></div><div class="ts-info"><span class="ts-name">⚪ 铬银</span><span class="ts-desc">金属质感 · 铬合金光泽</span><div class="ts-unlock">🔓 达成 <b>🛡️ 坚不可摧</b> 解锁</div></div><span class="ts-tag locked">🔒 锁定</span></div>
+          <!-- 成就解锁 - 特殊 -->
+          <div class="tut-skin-row"><div class="tut-skin-preview style-dragon" style="--s-body:#ffd700;--s-head:#ffe566;--s-dark:#b8860b"><div class="s-head" style="background:radial-gradient(circle at 40% 35%,#ffe566,#ffd700,#b8860b)"></div><div class="s-body" style="background:linear-gradient(90deg,#ffe566,#ffd700,#b8860b)"></div><div class="s-eye"></div><div class="s-pupil"></div><div class="s-shine"></div></div><div class="ts-info"><span class="ts-name">🐉 金龙</span><span class="ts-desc">龙鳞纹理 · 龙角 + 竖瞳</span><div class="ts-unlock">🔓 达成 <b>🌊 无双</b> 解锁</div></div><span class="ts-tag locked">🔒 锁定</span></div>
+          <div class="tut-skin-row"><div class="tut-skin-preview style-galaxy"><div class="s-head" style="background:radial-gradient(circle at 40% 35%,#c77dff,#7b2cbf)"></div><div class="s-body" style="background:linear-gradient(90deg,#4a0080,#7b2cbf,#c77dff,#7b2cbf)"></div><div class="s-eye"></div><div class="s-pupil"></div><div class="s-shine"></div></div><div class="ts-info"><span class="ts-name">🌌 星河</span><span class="ts-desc">星空闪烁 · 星球环特效</span><div class="ts-unlock">🔓 达成 <b>💯 百分</b> 解锁</div></div><span class="ts-tag locked">🔒 锁定</span></div>
+          <div class="tut-skin-row"><div class="tut-skin-preview style-cartoon"><div class="s-head" style="background:#ffb6c1;border:2px solid rgba(255,255,255,0.2)"></div><div class="s-body" style="background:#ff69b4;border:2px solid rgba(255,255,255,0.2)"></div><div class="s-eye"></div><div class="s-pupil"></div><div class="s-shine"></div></div><div class="ts-info"><span class="ts-name">🍬 糖果</span><span class="ts-desc">卡通可爱风 · 大眼 + 微笑</span><div class="ts-unlock">🔓 达成 <b>⚡ 极速</b> 解锁</div></div><span class="ts-tag locked">🔒 锁定</span></div>
+          <!-- 成就解锁 - 元素 -->
+          <div class="tut-skin-row"><div class="tut-skin-preview style-lava"><div class="s-head" style="background:radial-gradient(circle at 40% 35%,#ffcc00,#ff4500)"></div><div class="s-body" style="background:linear-gradient(90deg,#ff8c00,#ff4500,#8b0000)"></div><div class="s-eye"></div><div class="s-pupil"></div><div class="s-shine"></div></div><div class="ts-info"><span class="ts-name">🌋 熔岩</span><span class="ts-desc">熔岩流动 · 裂缝纹理</span><div class="ts-unlock">🔓 达成 <b>🔥 连击大师</b> 解锁</div></div><span class="ts-tag locked">🔒 锁定</span></div>
+          <div class="tut-skin-row"><div class="tut-skin-preview style-ice"><div class="s-head" style="background:radial-gradient(circle at 40% 35%,#fff,#87ceeb)"></div><div class="s-body" style="background:linear-gradient(180deg,#e0ffff,#87ceeb,#4682b4)"></div><div class="s-eye"></div><div class="s-pupil"></div><div class="s-shine"></div></div><div class="ts-info"><span class="ts-name">❄️ 冰晶</span><span class="ts-desc">冰晶质感 · 六边形钻石眼</span><div class="ts-unlock">🔓 达成 <b>⏱️ 马拉松</b> 解锁</div></div><span class="ts-tag locked">🔒 锁定</span></div>
+        </div>
+      </div>
+      <div class="tut-section">
+        <div class="tut-section-title">🏆 成就列表 <span style="font-size:11px;color:var(--text-dim);font-weight:400">— 共 12 项</span></div>
+        <div class="tut-ach-grid">
+          <div class="tut-ach-card"><span class="ta-icon">🔰</span><div><span class="ta-name">新手蛇</span><span class="ta-desc">完成第一局游戏</span></div></div>
+          <div class="tut-ach-card"><span class="ta-icon">💀</span><div><span class="ta-name">首杀</span><span class="ta-desc">击杀一条蛇</span></div></div>
+          <div class="tut-ach-card"><span class="ta-icon">🔥</span><div><span class="ta-name">连击大师</span><span class="ta-desc">达成 8x Combo</span></div></div>
+          <div class="tut-ach-card"><span class="ta-icon">👑</span><div><span class="ta-name">王者</span><span class="ta-desc">单局排名第一</span></div></div>
+          <div class="tut-ach-card"><span class="ta-icon">🗡️</span><div><span class="ta-name">巨人杀手</span><span class="ta-desc">击杀 > 你 2x 的蛇</span></div></div>
+          <div class="tut-ach-card"><span class="ta-icon">⚡</span><div><span class="ta-name">极速</span><span class="ta-desc">Boost 状态下击杀</span></div></div>
+          <div class="tut-ach-card"><span class="ta-icon">🛡️</span><div><span class="ta-name">坚不可摧</span><span class="ta-desc">护盾挡致命碰撞</span></div></div>
+          <div class="tut-ach-card"><span class="ta-icon">🌊</span><div><span class="ta-name">无双</span><span class="ta-desc">一局击杀 5 条蛇</span></div></div>
+          <div class="tut-ach-card"><span class="ta-icon">💯</span><div><span class="ta-name">百分</span><span class="ta-desc">单局得分 > 2000</span></div></div>
+          <div class="tut-ach-card"><span class="ta-icon">⏱️</span><div><span class="ta-name">马拉松</span><span class="ta-desc">存活满 180 秒</span></div></div>
+          <div class="tut-ach-card"><span class="ta-icon">🍽️</span><div><span class="ta-name">大胃王</span><span class="ta-desc">累计吃 500 食物</span></div></div>
+          <div class="tut-ach-card"><span class="ta-icon">🎯</span><div><span class="ta-name">赏金猎人</span><span class="ta-desc">击杀悬赏蛇</span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- Game Over -->
@@ -4010,9 +4286,29 @@ function buildSkinGrid() {
     d.appendChild(nm);
     if (!sk.locked) {
       d.onclick = () => { playerSkin = sk; saveSetting('skin', sk.id); buildSkinGrid(); };
+    } else {
+      d.onclick = () => showSkinLockHint(sk, d);
     }
     g.appendChild(d);
   });
+}
+
+function showSkinLockHint(skin, element) {
+  // Remove any existing hint
+  document.querySelectorAll('.skin-lock-hint').forEach(el => el.remove());
+  // Find the required achievement
+  const ach = ACHIEVEMENTS.find(a => a.id === skin.unlockAch);
+  if (!ach) return;
+  const hint = document.createElement('div');
+  hint.className = 'skin-lock-hint';
+  hint.innerHTML = `<span style="font-size:16px">🔒</span> 达成 <b>${ach.icon} ${ach.name}</b> 后解锁<span style="color:var(--text-dim);margin-left:4px">— ${ach.desc}</span>`;
+  document.body.appendChild(hint);
+  // Position under the skin card
+  const rect = element.getBoundingClientRect();
+  hint.style.left = rect.left + rect.width / 2 + 'px';
+  hint.style.top = (rect.bottom + 8) + 'px';
+  // Fade out
+  setTimeout(() => { hint.style.opacity = '0'; setTimeout(() => hint.remove(), 300); }, 2200);
 }
 // buildSkinGrid() called from init() after all modules loaded
 
@@ -4442,7 +4738,7 @@ function startGame() {
   // Fade out home panel with transition
   const homePanel = document.getElementById('home');
   const startAfterFade = () => {
-    ['home', 'skin-panel', 'settings-panel', 'game-over-panel'].forEach(id => hidePanel(id));
+    ['home', 'skin-panel', 'settings-panel', 'game-over-panel', 'tutorial-panel', 'achievements-panel'].forEach(id => hidePanel(id));
     homePanel.classList.remove('fading');
     document.getElementById('hud').classList.remove('hidden');
     document.getElementById('hud-fuel').classList.remove('hidden');
@@ -4625,6 +4921,25 @@ function showAchievementPanel() {
 }
 function hideAchievementPanel() {
   hidePanel('achievements-panel');
+}
+
+// ---- Tutorial Panel ----
+function showTutorialPanel() {
+  showPanel('tutorial-panel');
+  // Reset to first tab
+  switchTutorialTab('controls');
+  document.querySelectorAll('.tut-tab').forEach((t, i) => t.classList.toggle('active', i === 0));
+}
+function hideTutorialPanel() {
+  hidePanel('tutorial-panel');
+}
+function switchTutorialTab(name) {
+  document.querySelectorAll('.tut-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tut-page').forEach(p => p.classList.remove('active'));
+  const tab = document.querySelector(`.tut-tab[onclick*="${name}"]`);
+  const page = document.querySelector(`.tut-page[data-tut="${name}"]`);
+  if (tab) tab.classList.add('active');
+  if (page) page.classList.add('active');
 }
 
 // === 31_achieve.js ===
