@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-lang="zh" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-zh="薪酬合规审阅工具 — 江学文" data-en="Payroll Compliance Review Tool — Kevin Jiang">薪酬合规审阅工具 — 江学文</title>
+<meta name="description" content="把多人协作审阅薪酬合规规则的过程，从传 Excel 变成有分工、有留痕、有权限约束的 Web 工具。">
+<script>
+(function(){
+  try {
+    var t = localStorage.getItem('portfolio-theme');
+    if (!t) t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', t);
+    var l = localStorage.getItem('portfolio-lang');
+    if (!l) l = (navigator.language || 'zh').toLowerCase().indexOf('zh') === 0 ? 'zh' : 'en';
+    document.documentElement.setAttribute('data-lang', l);
+    document.documentElement.setAttribute('lang', l === 'zh' ? 'zh-CN' : 'en');
+  } catch (e) {}
+})();
+</script>
+<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="../index.html">Kevin <span>江学文</span></a>
+    <nav class="nav">
+      <a href="../index.html#work" aria-current="page"><span class="zh">作品</span><span class="en">Work</span></a>
+      <a href="../index.html#about"><span class="zh">关于</span><span class="en">About</span></a>
+      <a href="../index.html#contact"><span class="zh">联系</span><span class="en">Contact</span></a>
+    </nav>
+    <div class="header-tools">
+      <button class="icon-btn" id="lang-toggle" type="button" aria-label="Switch to English">EN</button>
+      <button class="icon-btn" id="theme-toggle" type="button" aria-label="切换深色模式"></button>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <section class="wrap proj-hero">
+    <a class="back-link" href="../index.html#work">← <span class="zh">返回作品</span><span class="en">All work</span></a>
+    <h1><span class="zh">薪酬合规审阅工具</span><span class="en">Payroll Compliance Review Tool</span></h1>
+    <p class="lede">
+      <span class="zh">一份涉及多国薪酬规则的实务手册，需要被拆成若干模块，分给不同的人逐条核对、
+        标注问题、写明理由，最后汇总回一张可交付的 Excel。原本这件事靠互相传表格完成。</span>
+      <span class="en">A multi-country payroll reference handbook had to be split into modules, assigned to
+        different reviewers, annotated line by line, and merged back into one deliverable spreadsheet.
+        The original process was people mailing spreadsheets to each other.</span>
+    </p>
+    <dl class="proj-meta">
+      <div>
+        <dt><span class="zh">类型</span><span class="en">Type</span></dt>
+        <dd><span class="zh">内部 Web 工具 · 源码不公开</span><span class="en">Internal web tool · source private</span></dd>
+      </div>
+      <div>
+        <dt><span class="zh">技术栈</span><span class="en">Stack</span></dt>
+        <dd>Python · Flask · SQLAlchemy · SQLite · openpyxl · Quill</dd>
+      </div>
+      <div>
+        <dt><span class="zh">我的角色</span><span class="en">My role</span></dt>
+        <dd><span class="zh">功能补全与工程加固</span><span class="en">Feature completion &amp; hardening</span></dd>
+      </div>
+      <div>
+        <dt><span class="zh">规模</span><span class="en">Size</span></dt>
+        <dd><span class="zh">Python 约 2,000 行 · 前端约 2,300 行</span><span class="en">~2,000 lines Python · ~2,300 lines frontend</span></dd>
+      </div>
+    </dl>
+  </section>
+
+  <section class="wrap section">
+    <div class="prose">
+
+      <h2><span class="zh">问题在哪</span><span class="en">The problem</span></h2>
+      <p>
+        <span class="zh">手册本身是一张几百行的 Excel，每一行是一条薪酬实务规则。审阅要做的事是：
+          判断这条规则在当前国家/地区还成不成立、附上依据、必要时写明修改建议。
+          多人并行时，Excel 提供的协作能力基本为零——谁改了哪一格看不出来，两个人同时打开就互相覆盖，
+          一天下来只能靠来回发文件。</span>
+        <span class="en">The handbook is a few hundred rows of Excel, one payroll rule per row. Reviewing means
+          deciding whether each rule still holds, attaching a source, and proposing a change where needed.
+          Excel gives you almost nothing for parallel work: no per-cell attribution, and two people editing at
+          once overwrite each other. The day degenerates into mailing files back and forth.</span>
+      </p>
+
+      <h2><span class="zh">做成了什么</span><span class="en">What it became</span></h2>
+      <ul>
+        <li>
+          <span class="zh"><strong>把审阅拆成有归属的任务。</strong>手册按模块切分，每个模块分配给具体的校验人；
+            工具只让被分配的人改自己那部分，其他人看得到进展但改不了。</span>
+          <span class="en"><strong>Review became assigned work.</strong> The handbook is split into modules, each assigned
+            to a named reviewer. Only the assignee can edit their part — everyone else can see progress but not touch it.</span>
+        </li>
+        <li>
+          <span class="zh"><strong>标注带格式和理由。</strong>每个字段用富文本编辑，可以加粗、标色、写删除线，
+            表达「这句要改」而不只是「这格不对」。</span>
+          <span class="en"><strong>Annotations carry formatting and reasoning.</strong> Each field is a rich-text editor,
+            so a reviewer can bold, colour or strike through — expressing <em>this clause should change</em>, not just
+            <em>this cell is wrong</em>.</span>
+        </li>
+        <li>
+          <span class="zh"><strong>审阅状态是一等公民。</strong>待审阅 / 已确认 / 需修改 / 待讨论四种状态贯穿界面与导出，
+            项目进度按「还有多少字段没确认」算，而不是凭感觉。</span>
+          <span class="en"><strong>Status is first-class.</strong> Four states (pending / confirmed / needs change / to discuss)
+            run through both the UI and the export, so progress means "how many fields are still unconfirmed" rather than a guess.</span>
+        </li>
+        <li>
+          <span class="zh"><strong>导出回原格式。</strong>审阅结果写回与源文件同结构的 Excel，
+            保留原有列宽与公式结构，可以直接交付给下一环节。</span>
+          <span class="en"><strong>It exports back to the original format.</strong> Results are written into a workbook
+            matching the source structure, preserving column widths and formula layout, ready to hand to the next step.</span>
+        </li>
+      </ul>
+
+      <h2><span class="zh">我做了什么</span><span class="en">My part</span></h2>
+      <p>
+        <span class="zh">这个工具的基础版本已经存在，但停留在「能跑」的阶段：没有测试、没有权限校验、
+          若干路径在出错时会静默丢数据。我负责的是把它推到可长期使用的程度——</span>
+        <span class="en">A basic version already existed, but it stopped at "it runs": no tests, no access control,
+          and several paths that silently lost data when something went wrong. My work was getting it to a state
+          that could be relied on —</span>
+      </p>
+      <ul>
+        <li>
+          <span class="zh"><strong>补上授权。</strong>有 8 个接口此前不校验任何权限，只要知道 URL 就能读写别人的项目。
+            加了统一的权限判断：项目创建者或被分配者才能访问，写操作额外收紧。</span>
+          <span class="en"><strong>Added authorisation.</strong> Eight endpoints checked nothing — knowing the URL was enough
+            to read or write someone else's project. Added a single access check: only the project owner or an assignee
+            may reach it, with writes restricted further.</span>
+        </li>
+        <li>
+          <span class="zh"><strong>修掉会丢数据的上传路径。</strong>原来的上传顺序是「先删旧审阅记录 → 再解析新文件」，
+            解析一旦失败，此前所有人工审阅成果就没了，而且提示还是「上传失败」——用户不知道自己丢了什么。
+            改成先解析、成功后再替换，失败则原样保留。</span>
+          <span class="en"><strong>Fixed a data-losing upload path.</strong> The original order was "delete existing review
+            records → parse the new file". One parse failure and every manual review was gone — while the message just
+            said "upload failed", so nobody knew what they'd lost. Now the file is parsed first and only swapped in on success.</span>
+        </li>
+        <li>
+          <span class="zh"><strong>修掉会「报成功但不生效」的保存。</strong>SQLite 写锁竞争时，保存操作会回滚整个事务
+            却仍然返回成功。用户改了一下午，界面上显示已保存，实际上一条都没落库。</span>
+          <span class="en"><strong>Fixed saves that reported success without persisting.</strong> Under SQLite write-lock
+            contention the save rolled back its whole transaction and still returned success. A reviewer could work all
+            afternoon, see "saved" every time, and have nothing in the database.</span>
+        </li>
+        <li>
+          <span class="zh"><strong>修掉导出会毁掉公式的路径。</strong>导出时的 <code>data_only</code> 参数会让 openpyxl
+            读取公式的缓存值并在写回时把公式整个替换掉——程序生成的表里没有缓存值，于是公式直接变成空白。</span>
+          <span class="en"><strong>Fixed an export path that destroyed formulas.</strong> The <code>data_only</code> flag makes
+            openpyxl read cached formula results and overwrite the formulas themselves. For programmatically generated
+            sheets there is no cached value, so formulas simply became blank.</span>
+        </li>
+        <li>
+          <span class="zh"><strong>补测试。</strong>权限矩阵、导出公式保全、空模块不被误判为「已完成」等，
+            都写成了测试，防止以后改回去。</span>
+          <span class="en"><strong>Added tests.</strong> The permission matrix, formula preservation on export, and not marking
+            an empty module "complete" are all covered now, so they can't quietly regress.</span>
+        </li>
+      </ul>
+
+      <h2><span class="zh">一处我改了默认行为的地方</span><span class="en">One deliberate behaviour change</span></h2>
+      <div class="note">
+        <span class="zh"><strong>把「清空」的含义改成了「回到未修改」。</strong>原来把某个字段删空后，
+          空字符串会被当成一个有效的人工修改值，于是界面上不再显示原始提取内容、导出该格也变空白，
+          而且重新导入文件后仍然如此——等于一次误删无法撤销。改成清空即恢复原始值；
+          代价是「人工确认为空」与「未修改」不再可区分，这在此工具的用法里是更合理的取舍。</span>
+        <span class="en"><strong>Clearing a field now means "revert to unmodified".</strong> Previously an emptied field stored
+          an empty string as a valid manual override — so the original content stopped showing, the export came out blank,
+          and re-importing the file didn't help. One accidental delete was permanent. Now clearing reverts to the source
+          value. The cost is that "confirmed empty" and "untouched" become indistinguishable, which is the better trade
+          for how this tool is actually used.</span>
+      </div>
+
+      <h2><span class="zh">为什么源码不公开</span><span class="en">Why the source is private</span></h2>
+      <p>
+        <span class="zh">这个工具是围绕真实业务的薪酬合规口径写的，手册内容、字段体系、业务规则都属于内部信息。
+          这里展示的是它的设计与工程取舍，不含任何业务数据。</span>
+        <span class="en">The tool is built around a real compliance framework — the handbook content, the field structure
+          and the business rules are all internal. What's shown here is the design and the engineering decisions,
+          with no business data.</span>
+      </p>
+
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div>© 2026 Kevin 江学文</div>
+    <div class="footer-links">
+      <a href="../index.html#work"><span class="zh">返回作品</span><span class="en">All work</span></a>
+      <a href="https://github.com/Kevinsssss-boop" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</footer>
+
+<script src="../assets/js/site.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-lang="zh" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-zh="LongChainRAG — 江学文" data-en="LongChainRAG — Kevin Jiang">LongChainRAG — 江学文</title>
+<meta name="description" content="检索增强问答系统的完整实现：文档入库、混合检索、重排序、带引用的回答。">
+<script>
+(function(){
+  try {
+    var t = localStorage.getItem('portfolio-theme');
+    if (!t) t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', t);
+    var l = localStorage.getItem('portfolio-lang');
+    if (!l) l = (navigator.language || 'zh').toLowerCase().indexOf('zh') === 0 ? 'zh' : 'en';
+    document.documentElement.setAttribute('data-lang', l);
+    document.documentElement.setAttribute('lang', l === 'zh' ? 'zh-CN' : 'en');
+  } catch (e) {}
+})();
+</script>
+<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="../index.html">Kevin <span>江学文</span></a>
+    <nav class="nav">
+      <a href="../index.html#work" aria-current="page"><span class="zh">作品</span><span class="en">Work</span></a>
+      <a href="../index.html#about"><span class="zh">关于</span><span class="en">About</span></a>
+      <a href="../index.html#contact"><span class="zh">联系</span><span class="en">Contact</span></a>
+    </nav>
+    <div class="header-tools">
+      <button class="icon-btn" id="lang-toggle" type="button" aria-label="Switch to English">EN</button>
+      <button class="icon-btn" id="theme-toggle" type="button" aria-label="切换深色模式"></button>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <section class="wrap proj-hero">
+    <a class="back-link" href="../index.html#work">← <span class="zh">返回作品</span><span class="en">All work</span></a>
+    <h1>LongChainRAG</h1>
+    <p class="lede">
+      <span class="zh">一个检索增强问答系统的完整实现：把文档灌进知识库，提问时先检索再回答，
+        并且每个结论都能点回到原文片段。面向电商商品知识库场景。</span>
+      <span class="en">An end-to-end retrieval-augmented QA system: ingest documents, retrieve before answering, and let every
+        claim link back to the passage it came from. Built for an e-commerce product knowledge base.</span>
+    </p>
+    <dl class="proj-meta">
+      <div>
+        <dt><span class="zh">类型</span><span class="en">Type</span></dt>
+        <dd><span class="zh">课程项目 · 前后端分离</span><span class="en">Coursework · split frontend/backend</span></dd>
+      </div>
+      <div>
+        <dt><span class="zh">技术栈</span><span class="en">Stack</span></dt>
+        <dd>FastAPI · LangChain · ChromaDB · SQLAlchemy · React · TypeScript · Ant Design</dd>
+      </div>
+      <div>
+        <dt><span class="zh">我的角色</span><span class="en">My role</span></dt>
+        <dd><span class="zh">独立完成</span><span class="en">Solo</span></dd>
+      </div>
+      <div>
+        <dt><span class="zh">源码</span><span class="en">Source</span></dt>
+        <dd><a href="https://github.com/Kevinsssss-boop/LongChainRAG" target="_blank" rel="noopener">LongChainRAG ↗</a></dd>
+      </div>
+    </dl>
+  </section>
+
+  <section class="wrap section">
+    <div class="note note-warn">
+      <span class="zh"><strong>没有在线 demo。</strong>这个项目的后端是一个需要 Python 运行环境、向量数据库
+        和大模型 API Key 的常驻服务。把它跑在免费托管上要么会休眠、要么会在被访问时产生费用，
+        而且需要把一个可用的 API Key 放在公开可访问的服务里——这两件事我都不想接受。
+        所以这里展示的是设计与代码，想跑的话按 README 本地启动即可。</span>
+      <span class="en"><strong>No live demo.</strong> The backend is a long-running service that needs a Python runtime, a vector
+        database and an LLM API key. Hosting that for free means either cold starts or unexpected bills, and it means putting a
+        working API key behind a publicly reachable endpoint — neither of which I'm willing to do. So what's here is the design
+        and the code; the README covers running it locally.</span>
+    </div>
+  </section>
+
+  <section class="wrap section">
+    <div class="prose">
+
+      <h2><span class="zh">RAG 里最容易被低估的一步是检索</span><span class="en">Retrieval is the underrated half of RAG</span></h2>
+      <p>
+        <span class="zh">大多数人第一次做 RAG 会把注意力放在提示词上，但实际决定回答质量的是「有没有把正确的段落捞出来」。
+          提示词写得再好，检索没召回目标段落，模型也只能编。所以这个项目在检索链路上做了三层——</span>
+        <span class="en">Most people building their first RAG system focus on the prompt. What actually decides answer quality is
+          whether the right passage got retrieved — a perfect prompt can't help if the passage never made it into context. So the
+          retrieval path here has three layers.</span>
+      </p>
+
+      <h3><span class="zh">一、混合检索：向量 + 关键词</span><span class="en">1. Hybrid retrieval: vectors plus keywords</span></h3>
+      <p>
+        <span class="zh">纯向量检索对语义相近的表述很好，但对型号、编号、专有名词这类「必须逐字命中」的查询很糟——
+          语义空间里「X200」和「X300」几乎挨在一起。补齐的做法是同时跑一路 BM25 关键词检索，
+          再把两路结果按 <strong>RRF（倒数排名融合）</strong>合并：</span>
+        <span class="en">Pure vector search handles paraphrase well but is bad at model numbers, IDs and proper nouns — the things
+          that must match literally. In embedding space "X200" and "X300" sit almost on top of each other. So a BM25 keyword pass
+          runs alongside it, and the two result sets are merged with <strong>Reciprocal Rank Fusion</strong>:</span>
+      </p>
+      <p style="padding-left:18px;border-left:2px solid var(--border);color:var(--text-muted);">
+        <code>score(d) = Σ 1 / (k + rank_i(d))</code>　（<code>k = 60</code>）
+      </p>
+      <p>
+        <span class="zh">用排名而不是用分数融合，是因为两路检索的分数量纲根本不可比——余弦距离和 BM25 分数没有共同尺度，
+          归一化也只是掩盖问题。排名是无量纲的，融合起来才稳。</span>
+        <span class="en">Fusing on rank rather than score is the point: cosine distance and BM25 scores have no common scale, and
+          normalising them just hides that. Ranks are dimensionless, so fusing them is stable.</span>
+      </p>
+      <p>
+        <span class="zh">顺带一提，BM25 依赖在导入失败时不会让整个服务起不来——检索降级为纯向量，并留一条日志说明。
+          一个可选依赖不该让主流程挂掉。</span>
+        <span class="en">The BM25 dependency also degrades gracefully: if the import fails the service still starts, retrieval
+          falls back to vectors only, and a log line records it. An optional dependency shouldn't take down the main path.</span>
+      </p>
+
+      <h3><span class="zh">二、重排序：保证来源多样</span><span class="en">2. Reranking: guaranteeing source diversity</span></h3>
+      <p>
+        <span class="zh">检索回来的前几条经常来自同一份文档的相邻段落——它们内容重复，却把上下文位置全占了，
+          其他文档里真正相关的段落反而进不来。重排序在按相关度排序之后，先保证每份来源文档至少有一条入选，
+          再用剩下的名额按分数补齐。</span>
+        <span class="en">The top hits often come from adjacent chunks of the same document — near-duplicates that crowd out the
+          context window while genuinely relevant passages from other documents never make it in. The reranker sorts by relevance,
+          then guarantees at least one chunk per source document before filling the remaining slots by score.</span>
+      </p>
+      <p>
+        <span class="zh">实现上没有引入交叉编码器模型——那会带来一个额外的模型下载和推理开销。
+          这里用的是检索阶段已有的分数做排序，对规模不大的知识库足够，也保持了零额外依赖。</span>
+        <span class="en">No cross-encoder model is involved — that would add a model download and inference cost. Ranking uses the
+          scores retrieval already produced, which is enough at this scale and keeps the dependency list short.</span>
+      </p>
+
+      <h3><span class="zh">三、带引用的回答</span><span class="en">3. Answers carry citations</span></h3>
+      <p>
+        <span class="zh">模型被要求只依据检索到的片段作答，并标注每句话来自哪个片段；界面上这些引用可以点开看原文。
+          这既是给用户的信任依据，也是调试检索质量最直接的手段——回答错了，看引用就知道是检索没捞到还是模型读错了。</span>
+        <span class="en">The model is instructed to answer only from retrieved passages and to mark which passage supports each
+          statement; in the UI those citations open the original text. That's trust for the reader, and it's also the fastest way
+          to debug retrieval — when an answer is wrong, the citations tell you whether retrieval missed or the model misread.</span>
+      </p>
+
+      <h2><span class="zh">工程上还做了什么</span><span class="en">Other engineering work</span></h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th><span class="zh">方面</span><span class="en">Area</span></th>
+              <th><span class="zh">做法</span><span class="en">Approach</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><span class="zh">流式输出</span><span class="en">Streaming</span></td>
+                <td><span class="zh">逐字返回，不等整段生成完</span><span class="en">Token-by-token rather than waiting for the whole answer</span></td></tr>
+            <tr><td><span class="zh">语义缓存</span><span class="en">Semantic cache</span></td>
+                <td><span class="zh">相近的问题直接命中缓存，省掉一次完整检索和生成</span><span class="en">Near-duplicate questions hit the cache, skipping retrieval and generation</span></td></tr>
+            <tr><td><span class="zh">多用户</span><span class="en">Multi-user</span></td>
+                <td><span class="zh">JWT 认证 · 会话隔离 · 管理员与普通用户权限区分</span><span class="en">JWT auth · isolated sessions · separate admin and user permissions</span></td></tr>
+            <tr><td><span class="zh">限流</span><span class="en">Rate limiting</span></td>
+                <td><span class="zh">接口级限流，避免单个用户占满模型配额</span><span class="en">Per-endpoint limits so one user can't exhaust the model quota</span></td></tr>
+            <tr><td><span class="zh">可测性</span><span class="en">Testability</span></td>
+                <td><span class="zh">有一个压力测试模式，把全部外部 API 调用替换为确定性的模拟实现——
+                  不需要 Key、不产生费用就能跑通完整链路</span><span class="en">A stress-test mode replaces every external API call with a deterministic stub, so the whole pipeline runs with no key and no cost</span></td></tr>
+            <tr><td><span class="zh">文档格式</span><span class="en">Formats</span></td>
+                <td><span class="zh">PDF / TXT / CSV / Markdown 上传、分块、向量化入库</span><span class="en">Upload, chunk and index PDF / TXT / CSV / Markdown</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2><span class="zh">关于这个项目</span><span class="en">Origin</span></h2>
+      <p>
+        <span class="zh">这是我在学习检索增强生成时做的完整实现，重点不在「能问答」，而在于把检索这条链路上
+          每个环节都拆开想过一遍——为什么要混合检索、为什么要按排名融合、重排序解决的是什么问题。
+          这些判断是在动手之后才真正理解的，所以我把它们写在这里而不是藏在代码里。</span>
+        <span class="en">I built this while learning retrieval-augmented generation. The point wasn't "it answers questions" but
+          taking each stage of the retrieval path apart — why hybrid search, why fuse on rank, what reranking is actually for.
+          Those are judgements I only understood by building it, which is why they're written down here instead of left in the code.</span>
+      </p>
+
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div>© 2026 Kevin 江学文</div>
+    <div class="footer-links">
+      <a href="../index.html#work"><span class="zh">返回作品</span><span class="en">All work</span></a>
+      <a href="https://github.com/Kevinsssss-boop/LongChainRAG" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</footer>
+
+<script src="../assets/js/site.js" defer></script>
+</body>
+</html>

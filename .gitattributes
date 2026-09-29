@@ -1,0 +1,12 @@
+# 统一换行符为 LF，避免 Windows 检出时整文件显示为已修改
+* text=auto eol=lf
+
+# 二进制不转换
+*.png binary
+*.jpg binary
+*.ico binary
+
+# demos/ 下是其他项目的构建产物，不是本仓库手写的代码 ——
+# 让 GitHub 在语言统计和 diff 里按生成物对待
+demos/** linguist-generated=true
+assets/img/** linguist-documentation=true

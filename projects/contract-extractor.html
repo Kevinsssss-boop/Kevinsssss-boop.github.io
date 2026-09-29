@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-lang="zh" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-zh="合同字段提取工具 — 江学文" data-en="Contract Field Extractor — Kevin Jiang">合同字段提取工具 — 江学文</title>
+<meta name="description" content="批量读取 PDF 合同，自动抽取 40 多个字段，在原文中高亮对应位置供逐条核对，最后导出成 Excel。">
+<script>
+(function(){
+  try {
+    var t = localStorage.getItem('portfolio-theme');
+    if (!t) t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', t);
+    var l = localStorage.getItem('portfolio-lang');
+    if (!l) l = (navigator.language || 'zh').toLowerCase().indexOf('zh') === 0 ? 'zh' : 'en';
+    document.documentElement.setAttribute('data-lang', l);
+    document.documentElement.setAttribute('lang', l === 'zh' ? 'zh-CN' : 'en');
+  } catch (e) {}
+})();
+</script>
+<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="../index.html">Kevin <span>江学文</span></a>
+    <nav class="nav">
+      <a href="../index.html#work" aria-current="page"><span class="zh">作品</span><span class="en">Work</span></a>
+      <a href="../index.html#about"><span class="zh">关于</span><span class="en">About</span></a>
+      <a href="../index.html#contact"><span class="zh">联系</span><span class="en">Contact</span></a>
+    </nav>
+    <div class="header-tools">
+      <button class="icon-btn" id="lang-toggle" type="button" aria-label="Switch to English">EN</button>
+      <button class="icon-btn" id="theme-toggle" type="button" aria-label="切换深色模式"></button>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <section class="wrap proj-hero">
+    <a class="back-link" href="../index.html#work">← <span class="zh">返回作品</span><span class="en">All work</span></a>
+    <h1><span class="zh">合同字段提取工具</span><span class="en">Contract Field Extractor</span></h1>
+    <p class="lede">
+      <span class="zh">一批多语种劳动合同需要录入员工系统。人工做法是一份份打开 PDF，找到姓名、薪资、
+        银行账号、试用期等字段，逐条敲进表格。这个工具把「找到」自动化，把「确认」留给人。</span>
+      <span class="en">A batch of multilingual employment contracts had to be entered into an HR system. Manually that means
+        opening each PDF, hunting down name, salary, bank details, probation period, and typing them in. This tool automates
+        the <em>finding</em> and leaves the <em>verifying</em> to a human.</span>
+    </p>
+    <dl class="proj-meta">
+      <div>
+        <dt><span class="zh">类型</span><span class="en">Type</span></dt>
+        <dd><span class="zh">内部桌面应用 · 源码不公开</span><span class="en">Internal desktop app · source private</span></dd>
+      </div>
+      <div>
+        <dt><span class="zh">技术栈</span><span class="en">Stack</span></dt>
+        <dd>Electron · React · TypeScript · Ant Design · Zustand · sql.js · pdf.js</dd>
+      </div>
+      <div>
+        <dt><span class="zh">我的角色</span><span class="en">My role</span></dt>
+        <dd><span class="zh">缺陷修复与可靠性加固</span><span class="en">Bug fixing &amp; reliability</span></dd>
+      </div>
+      <div>
+        <dt><span class="zh">规模</span><span class="en">Size</span></dt>
+        <dd><span class="zh">主进程约 2,100 行 · 渲染进程约 2,100 行</span><span class="en">~2,100 lines main · ~2,100 lines renderer</span></dd>
+      </div>
+    </dl>
+  </section>
+
+  <section class="wrap section">
+    <div class="prose">
+
+      <h2><span class="zh">设计上最关键的一个决定</span><span class="en">The key design decision</span></h2>
+      <p>
+        <span class="zh"><strong>不让人去核对一张表格，而是让人核对 PDF 原文。</strong>
+          自动提取的字段一定会错，问题是怎么让错误被发现得足够快。如果只给出一张「字段 → 值」的结果表，
+          复核的人必须回头翻 PDF 才能判断对不对，而这正是最慢的一步。</span>
+        <span class="en"><strong>Reviewers verify the PDF, not a table.</strong> Extracted fields will be wrong sometimes;
+          the real question is how fast a wrong value gets noticed. If all you get is a field-to-value table, the reviewer
+          has to go back to the PDF to check anything — which is exactly the slow part.</span>
+      </p>
+      <p>
+        <span class="zh">所以这个工具在右侧显示 PDF 原文，选中某个字段就在原文里高亮它的位置，两边联动。
+          复核从「翻文件」变成「看一眼」。同一个思路也用在校验上：字段值改完立刻重跑校验规则，
+          不符合预期格式的当场标黄并说明期望值。</span>
+        <span class="en">So the app shows the source PDF alongside the fields and highlights the matched text, keeping the two
+          in sync. Checking goes from "find the document" to "glance right". The same idea drives validation: editing a value
+          re-runs the rules immediately and flags anything unexpected, with the expected format spelled out.</span>
+      </p>
+
+      <h2><span class="zh">完整流程</span><span class="en">The pipeline</span></h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th><span class="zh">步骤</span><span class="en">Step</span></th>
+              <th><span class="zh">做什么</span><span class="en">What happens</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="zh">1 导入</span><span class="en">1 Import</span></td>
+              <td><span class="zh">批量拖入 PDF；加密文件单独弹出密码框</span><span class="en">Drop in PDFs in bulk; encrypted files prompt for a password</span></td>
+            </tr>
+            <tr>
+              <td><span class="zh">2 取文本</span><span class="en">2 Extract text</span></td>
+              <td><span class="zh">先走 PDF 文字层（免费且快）；文字层为空再退回 OCR</span><span class="en">Use the PDF text layer first (free and fast); fall back to OCR only when it's empty</span></td>
+            </tr>
+            <tr>
+              <td><span class="zh">3 分类</span><span class="en">3 Classify</span></td>
+              <td><span class="zh">先按关键词判断合同类型，判不出来才调模型</span><span class="en">Keyword rules first, model only when they're inconclusive</span></td>
+            </tr>
+            <tr>
+              <td><span class="zh">4 提取</span><span class="en">4 Extract</span></td>
+              <td><span class="zh">一次请求取回全部 40 多个字段</span><span class="en">One request returns all 40+ fields</span></td>
+            </tr>
+            <tr>
+              <td><span class="zh">5 核对</span><span class="en">5 Review</span></td>
+              <td><span class="zh">人工逐条确认，改动即时重跑校验</span><span class="en">A human confirms each field; edits re-validate on the spot</span></td>
+            </tr>
+            <tr>
+              <td><span class="zh">6 导出</span><span class="en">6 Export</span></td>
+              <td><span class="zh">写成带校验列的 Excel，问题单元格高亮并附批注</span><span class="en">Write an Excel with validation columns, problem cells highlighted and annotated</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2><span class="zh">我做了什么</span><span class="en">My part</span></h2>
+      <p>
+        <span class="zh">功能是完整的，问题出在「出错的时候」。我系统地把失败路径走了一遍，修掉的是这些——</span>
+        <span class="en">The features were all there; the problems were in what happened when things went wrong.
+          I went through the failure paths systematically and fixed these —</span>
+      </p>
+      <ul>
+        <li>
+          <span class="zh"><strong>密码错误被当成「处理成功」。</strong>解密失败的异常消息里含「解密」二字，
+            而判断能否自动重试的代码找的是「加密」——一字之差，这个错误就被当成可重试的临时故障吞掉了。
+            文件最终被标记为完成并写入一整批空字段，用户看到的是成功。
+            改成用异常类型判断，需要人工介入的错误一律原样上抛。</span>
+          <span class="en"><strong>A wrong password was treated as success.</strong> The decryption error message contained
+            "decrypt" while the retry logic looked for "encrypt" — one character apart. So the error was swallowed as a
+            transient failure, the file was marked complete, and a full set of empty fields got written. The user saw success.
+            Now these are distinguished by exception type, and anything needing a human is raised as-is.</span>
+        </li>
+        <li>
+          <span class="zh"><strong>重提一次，人工修正值全丢。</strong>原流程是「读旧值 → 删掉旧记录 → 调模型」，
+            模型一失败就走异常分支，读出来的旧值当场丢弃；重试时表已经空了，读回来自然什么都没有。
+            改成模型调用全部成功后才替换旧记录。</span>
+          <span class="en"><strong>Reprocessing wiped every manual correction.</strong> The order was "read old values → delete
+            old rows → call the model". Any model failure jumped to the error branch and dropped the values it had just read;
+            by the retry the table was already empty. Now the old rows are replaced only after every model call succeeds.</span>
+        </li>
+        <li>
+          <span class="zh"><strong>配置页会把密钥存坏。</strong>界面把 API Key 显示成掩码，保存时又把掩码原样写回，
+            于是真正的密钥被一串圆点覆盖，且不可恢复。改成掩码值直接忽略不写，并把两个表单实例拆开
+            （原先两张卡片共用一个表单实例，互相污染）。</span>
+          <span class="en"><strong>The settings page corrupted API keys.</strong> The UI showed a masked key and then wrote that
+            mask straight back, overwriting the real secret with dots — unrecoverable. Masked values are now skipped on write,
+            and the two cards no longer share one form instance (which was letting them contaminate each other).</span>
+        </li>
+        <li>
+          <span class="zh"><strong>全部失败时进度条停在 0%。</strong>失败路径只发了错误事件，而计数器是在完成事件里推进的，
+            于是整整一批文件全失败，界面显示的一直是「刚开始」。现在失败同样发出完成事件并计入失败数。</span>
+          <span class="en"><strong>A fully failed batch showed 0% progress.</strong> The failure path only emitted an error event,
+            while the progress counter advanced on completion events — so a batch where everything failed looked like it had
+            just started. Failures now emit a completion too, counted in the failed total.</span>
+        </li>
+        <li>
+          <span class="zh"><strong>双击图标会丢数据。</strong>开两个实例时，各自持有一份内存数据库，
+            退出时全量覆盖同一个文件，后关的那个把前一个的校对成果整个抹掉。加了单实例锁。</span>
+          <span class="en"><strong>Double-clicking the icon lost data.</strong> Two instances each held their own in-memory
+            database and wrote the whole file back on exit — the last one to close erased the other's review work.
+            Added a single-instance lock.</span>
+        </li>
+        <li>
+          <span class="zh"><strong>服务挂起会拖死整批。</strong>模型和 OCR 请求没有超时，服务端不响应时并发槽位永久占用，
+            只能杀进程。补上超时。</span>
+          <span class="en"><strong>A hung service stalled the batch.</strong> Model and OCR calls had no timeout, so an
+            unresponsive server held the concurrency slots forever and the only way out was killing the process. Timeouts added.</span>
+        </li>
+        <li>
+          <span class="zh"><strong>导出的两列永远是空的。</strong>导出时按固定列清单写入，但其中两列的取值逻辑
+            从未被接上，于是每次导出的这两列都是空值，且不报错。</span>
+          <span class="en"><strong>Two export columns were always empty.</strong> The exporter wrote a fixed column list, but two
+            of them never had their value lookup wired up — so they came out blank every time, silently.</span>
+        </li>
+      </ul>
+
+      <h2><span class="zh">数据流向</span><span class="en">Where the data goes</span></h2>
+      <div class="note note-warn">
+        <span class="zh"><strong>这个工具会把合同全文发给外部服务：</strong>文本送给大模型做字段抽取，
+          扫描件的整页图片送给 OCR 服务。所有数据保存在本机，但这两次外发是提取功能的前提。
+          内部工具部署时会先说明这一点。</span>
+        <span class="en"><strong>This tool sends contract text to external services:</strong> the text goes to an LLM for field
+          extraction, and scanned pages go as images to an OCR provider. Everything is stored locally, but those two calls are
+          what makes extraction possible. Anyone deploying it internally should know that up front.</span>
+      </div>
+
+      <h2><span class="zh">为什么源码不公开</span><span class="en">Why the source is private</span></h2>
+      <p>
+        <span class="zh">字段体系、校验规则和提示词都是围绕真实业务口径设计的，属于内部信息。
+          这里展示的是工程判断，不含业务数据。</span>
+        <span class="en">The field schema, validation rules and prompts are built around a real business framework and count
+          as internal. What's here is the engineering judgement, with no business data.</span>
+      </p>
+
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div>© 2026 Kevin 江学文</div>
+    <div class="footer-links">
+      <a href="../index.html#work"><span class="zh">返回作品</span><span class="en">All work</span></a>
+      <a href="https://github.com/Kevinsssss-boop" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</footer>
+
+<script src="../assets/js/site.js" defer></script>
+</body>
+</html>
