@@ -28,6 +28,15 @@ canvas#minimap{position:fixed;bottom:12px;right:12px;border:2px solid var(--bord
 #game-over-panel .winner{color:#ffd740;font-size:22px;font-weight:700;margin:6px 0}
 #game-over-panel .result{color:var(--text);font-size:15px;margin:2px 0}
 #game-over-panel .stats{color:var(--text-dim);font-size:12px;margin:2px 0}
+/* 双人对战的成绩对照：两行，赢的那行描金边 */
+#game-over-panel .versus{display:flex;flex-direction:column;gap:6px;margin:10px 0;width:280px}
+#game-over-panel .vs-row{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:8px 14px;border-radius:10px;background:rgba(255,255,255,0.04);
+  border:1px solid transparent;font-size:14px;color:var(--text-dim)}
+#game-over-panel .vs-row.win{border-color:#ffd740;color:#ffd740;font-weight:700;background:rgba(255,215,64,0.08)}
+#game-over-panel .vs-name{font-weight:800;letter-spacing:1px}
+#game-over-panel .vs-score{font-variant-numeric:tabular-nums;font-weight:700}
+#game-over-panel .vs-rank{font-size:12px;opacity:.75}
 .leaderboard{background:rgba(255,255,255,0.03);border-radius:12px;padding:12px 20px;margin:10px 0;max-height:160px;overflow-y:auto;width:280px}
 .leaderboard h3{color:var(--accent);font-size:13px;margin-bottom:6px;text-align:center}
 .leaderboard .row{display:flex;justify-content:space-between;font-size:12px;padding:2px 0;color:var(--text-dim)}
@@ -84,6 +93,34 @@ canvas#minimap{position:fixed;bottom:12px;right:12px;border:2px solid var(--bord
 #hud-fuel .bar-bg{width:140px;height:6px;background:rgba(255,255,255,0.1);border-radius:3px;overflow:hidden}
 #hud-fuel .bar-fill{height:100%;background:linear-gradient(90deg,#ff9100,#ffc400);border-radius:3px;transition:width .2s}
 #hud-fuel .bar-label{font-size:10px;color:var(--text-dim)}
+
+/* ---- 双人对战：两名玩家各自的计分板 ----
+   贴在左上 / 右上角，互不遮挡；中间只留时间。 */
+.hud-player{position:fixed;top:12px;left:12px;z-index:40;pointer-events:none;
+  min-width:136px;padding:8px 12px;border-radius:10px;
+  background:rgba(10,10,30,0.8);border:1px solid var(--border);
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.hud-player-right{left:auto;right:12px}
+.hp-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:5px}
+.hp-name{font-size:10px;font-weight:800;letter-spacing:1px;color:var(--text-dim)}
+.hp-pu{font-size:13px;line-height:1}
+.hp-row{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.hp-k{font-size:11px;color:var(--text-dim)}
+.hp-v{font-size:18px;font-weight:800;line-height:1.35;font-variant-numeric:tabular-nums}
+.hp-rank{color:#ffd740}
+.hp-bar{height:5px;margin-top:6px;border-radius:3px;overflow:hidden;background:rgba(255,255,255,0.1)}
+.hp-fill{height:100%;width:100%;border-radius:3px;transition:width .2s;background:linear-gradient(90deg,#ff9100,#ffc400)}
+
+/* 双人模式下，中间那套 HUD 只保留时间 ——
+   得分/排名/combo/燃料都已经挪到各自的板子上了。 */
+body.mode-local #hud-box-score,
+body.mode-local #hud-box-rank,
+body.mode-local #hud-box-combo,
+body.mode-local #hud-fuel,
+body.mode-local #hud-powerup{display:none}
+
+/* 死亡后把该玩家的板子压暗，一眼看出谁还在场上 */
+.hud-player.hp-dead{opacity:.42}
 #hud-powerup{position:fixed;top:80px;left:50%;transform:translateX(-50%);z-index:40;pointer-events:none;font-size:28px;animation:pulse-icon .6s ease-in-out infinite}
 /* Kill feed */
 #kill-feed{position:fixed;top:90px;right:12px;z-index:45;pointer-events:none;display:flex;flex-direction:column;gap:4px}
@@ -527,6 +564,9 @@ canvas#minimap{position:fixed;bottom:12px;right:12px;border:2px solid var(--bord
   <div class="winner" id="go-winner"></div>
   <div class="result" id="go-result"></div>
   <div class="stats" id="go-stats"></div>
+  <!-- 双人对战：两名玩家的成绩对照。单人模式下隐藏，
+       那里仍用上面 #go-result / #go-stats 那两行「你的排名/你的得分」。 -->
+  <div class="versus hidden" id="go-versus"></div>
   <div class="leaderboard" id="go-lb"></div>
   <div class="btn-row">
     <button class="btn primary" onclick="startGame()">🔄 再来一局</button>
@@ -536,13 +576,30 @@ canvas#minimap{position:fixed;bottom:12px;right:12px;border:2px solid var(--bord
 
 <!-- HUD -->
 <div id="hud" class="hidden">
-  <div class="hud-box"><div class="hud-label">得分</div><div class="hud-val" style="background:linear-gradient(135deg,#ff6b6b,#ffd93d);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text" id="hud-score">0</div></div>
-  <div class="hud-box"><div class="hud-label">⏱ 时间</div><div class="hud-val" id="hud-time">3:00</div></div>
-  <div class="hud-box"><div class="hud-label">🥇 排名</div><div class="hud-val" style="color:#ffd740" id="hud-rank">1/9</div></div>
-  <div class="hud-box"><div class="hud-label">combo</div><div class="hud-val" style="color:#ff9100" id="hud-combo">-</div></div>
+  <div class="hud-box" id="hud-box-score"><div class="hud-label">得分</div><div class="hud-val" style="background:linear-gradient(135deg,#ff6b6b,#ffd93d);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text" id="hud-score">0</div></div>
+  <div class="hud-box" id="hud-box-time"><div class="hud-label">⏱ 时间</div><div class="hud-val" id="hud-time">3:00</div></div>
+  <div class="hud-box" id="hud-box-rank"><div class="hud-label">🥇 排名</div><div class="hud-val" style="color:#ffd740" id="hud-rank">1/9</div></div>
+  <div class="hud-box" id="hud-box-combo"><div class="hud-label">combo</div><div class="hud-val" style="color:#ff9100" id="hud-combo">-</div></div>
 </div>
 <div id="hud-fuel" class="hidden"><span class="bar-label">⚡</span><div class="bar-bg"><div class="bar-fill" id="fuel-fill" style="width:100%"></div></div></div>
 <div id="hud-powerup" class="hidden"></div>
+
+<!-- 双人对战：两名玩家各有一块计分板。
+     单人模式下这两块是隐藏的，中间那套 #hud 照常显示全部四项。
+     双人模式下中间只留时间，得分/排名/燃料分给各自的板子 ——
+     否则两组数字挤在一起，谁也分不清哪个是自己的。 -->
+<div id="hud-p1" class="hud-player hidden">
+  <div class="hp-head"><span class="hp-name">P1</span><span class="hp-pu" id="p1-powerup"></span></div>
+  <div class="hp-row"><span class="hp-k">得分</span><span class="hp-v" id="p1-score">0</span></div>
+  <div class="hp-row"><span class="hp-k">排名</span><span class="hp-v hp-rank" id="p1-rank">1/12</span></div>
+  <div class="hp-bar"><div class="hp-fill" id="p1-fuel" style="width:100%"></div></div>
+</div>
+<div id="hud-p2" class="hud-player hud-player-right hidden">
+  <div class="hp-head"><span class="hp-name">P2</span><span class="hp-pu" id="p2-powerup"></span></div>
+  <div class="hp-row"><span class="hp-k">得分</span><span class="hp-v" id="p2-score">0</span></div>
+  <div class="hp-row"><span class="hp-k">排名</span><span class="hp-v hp-rank" id="p2-rank">1/12</span></div>
+  <div class="hp-bar"><div class="hp-fill" id="p2-fuel" style="width:100%"></div></div>
+</div>
 
 <button id="btn-pause" class="hidden" onclick="togglePause()">⏸ 暂停<span class="key">P</span></button>
 <div id="kill-feed"></div>
@@ -1145,7 +1202,7 @@ function updateAI(snake, dt, allSnakes, foods) {
         threats.sort((a, b) => a.dist - b.dist);
         const t = threats[0];
         snake.aiTarget = { x: head.x + t.dx * 2.5, y: head.y + t.dy * 2.5 };
-      } else if (prey.length > 0 && prey[0].dist < myLen * 8 && prey[0].segs.length < myLen * 0.5) {
+      } else if (prey.length > 0 && prey[0].dist < myLen * 8 && prey[0].snake.segs.length < myLen * 0.5) {
         prey.sort((a, b) => a.dist - b.dist);
         snake.aiTarget = prey[0].snake.head;
       } else if (nearestPU && nearestPUDist < 250 * 250) {
@@ -2061,12 +2118,88 @@ function update(dt) {
 let hudCache = { score: -1, time: '', rank: '', combo: '', fuel: -1, fuelColor: '', powerup: '' };
 let hudThrottle = 0;
 
+/**
+ * 刷新一名玩家的计分板（双人对战用）。
+ *
+ * 两块板子结构完全相同，只有 id 前缀不同，所以合并成一个函数。
+ * 分开写两次的话，以后改一处忘一处几乎是必然的。
+ *
+ * 关键点：P2 此前**完全没有**任何状态显示 —— 看不到得分、看不到排名，
+ * 尤其看不到加速燃料还剩多少。而燃料是有限资源，没有提示的话
+ * 玩家只会觉得「加速时有时无」，然后不停按 Tab。
+ */
+function updatePlayerPanel(prefix, snake) {
+  const el = document.getElementById('hud-' + prefix);
+  if (!el || !snake) return;
+
+  // 死亡后整块压暗，一眼看出谁还在场上
+  el.classList.toggle('hp-dead', !snake.alive);
+
+  const ck = 'p:' + prefix;
+
+  if (hudCache[ck + ':score'] !== snake.score) {
+    document.getElementById(prefix + '-score').textContent = snake.score;
+    hudCache[ck + ':score'] = snake.score;
+  }
+
+  // 排名只在存活时计算。死掉的蛇不参与名次，显示「—」比给一个假名次诚实。
+  let rankStr = '—';
+  if (snake.alive) {
+    const alive = [];
+    for (let i = 0; i < snakes.length; i++) { if (snakes[i].alive) alive.push(snakes[i]); }
+    alive.sort((a, b) => b.score - a.score);
+    let rank = alive.length;
+    for (let i = 0; i < alive.length; i++) { if (alive[i] === snake) { rank = i + 1; break; } }
+    rankStr = rank + '/' + snakes.length;
+  }
+  if (hudCache[ck + ':rank'] !== rankStr) {
+    document.getElementById(prefix + '-rank').textContent = rankStr;
+    hudCache[ck + ':rank'] = rankStr;
+  }
+
+  const fuelPct = Math.round((snake.boostFuel / CFG.BOOST_FUEL) * 100);
+  if (hudCache[ck + ':fuel'] !== fuelPct) {
+    const fill = document.getElementById(prefix + '-fuel');
+    fill.style.width = fuelPct + '%';
+    fill.style.background = fuelPct < 25
+      ? 'linear-gradient(90deg,#ff5252,#ff9100)'
+      : 'linear-gradient(90deg,#ff9100,#ffc400)';
+    hudCache[ck + ':fuel'] = fuelPct;
+  }
+
+  const PRIORITY = ['shield', 'ghost', 'speed', 'magnet'];
+  const active = Object.keys(snake.powerups).sort((a, b) =>
+    (PRIORITY.indexOf(a) !== -1 ? PRIORITY.indexOf(a) : 99) -
+    (PRIORITY.indexOf(b) !== -1 ? PRIORITY.indexOf(b) : 99)
+  )[0];
+  let puStr = '';
+  if (active) {
+    const t = POWERUP_TYPES.find(p => p.id === active);
+    if (t) puStr = t.icon + ' ' + Math.ceil(snake.powerups[active]) + 's';
+  }
+  if (hudCache[ck + ':pu'] !== puStr) {
+    document.getElementById(prefix + '-powerup').textContent = puStr;
+    hudCache[ck + ':pu'] = puStr;
+  }
+}
+
 function updateHUD(dt) {
   hudThrottle += dt;
   if (hudThrottle < 0.09) return; // ~10 Hz
   hudThrottle = 0;
 
-  const player = getPlayer() || getPlayer2();
+  // 双人对战：两名玩家各刷各的计分板（左上 / 右上）。
+  // 中央那套只留时间，其余格子由 CSS 的 body.mode-local 隐藏。
+  if (mode === 'local') {
+    updatePlayerPanel('p1', getPlayer());
+    updatePlayerPanel('p2', getPlayer2());
+  }
+
+  // 这里不再回退到 getPlayer2()。
+  // 原来写的是 `getPlayer() || getPlayer2()`：P1 一死，中央 HUD 就悄悄
+  // 换成 P2 的得分和排名，同一组数字换了主人却没有任何提示 ——
+  // 双人模式下这是最容易把人绕晕的一处。
+  const player = getPlayer();
 
   const score = player ? player.score : 0;
   if (hudCache.score !== score) {
@@ -2198,12 +2331,39 @@ function endGame() {
   document.getElementById('btn-pause').classList.add('hidden');
   document.getElementById('hud-fuel').classList.add('hidden');
   document.getElementById('hud-powerup').classList.add('hidden');
+  // 双人计分板也收起来 —— 成绩已经由面板上的对照表给出，留着只是重复
+  document.getElementById('hud-p1').classList.add('hidden');
+  document.getElementById('hud-p2').classList.add('hidden');
 
   // Title — mode-specific
   let aliveCount = 0;
   for (const s of snakes) { if (s.alive) aliveCount++; }
 
-  if (mode === 'hunter') {
+  // 双人对战单独一支：胜负要在两名真人之间决出。
+  //
+  // 原来这里没有 local 分支，于是直接落到下面的「你死了」——而 player 取的
+  // 是 P1，所以 P2 独自存活时标题仍然写着「你死了」，赢家那行却念出 P2 的名字。
+  // 更常见的情况是 P2 赢了却看不到自己的成绩：整个面板只显示 P1 的排名和得分。
+  let versusWinner = '';
+  if (mode === 'local') {
+    const p1 = snakes.find(s => s.isPlayer && !s.isPlayer2);
+    const p2s = snakes.find(s => s.isPlayer2);
+
+    // 先看谁还活着；都活着（时间到）或都死了，就比分数
+    if (p1 && p1.alive && !(p2s && p2s.alive)) versusWinner = 'P1';
+    else if (p2s && p2s.alive && !(p1 && p1.alive)) versusWinner = 'P2';
+    else if (p1 && p2s) {
+      if (p1.score > p2s.score) versusWinner = 'P1';
+      else if (p2s.score > p1.score) versusWinner = 'P2';
+      else versusWinner = 'TIE';
+    }
+
+    document.getElementById('go-title').textContent =
+      versusWinner === 'TIE' ? '🤝 平局' : (versusWinner ? `🏆 ${versusWinner} 获胜` : '对局结束');
+    document.getElementById('go-winner').textContent =
+      versusWinner === 'TIE' ? '两人得分相同'
+        : versusWinner === 'P1' ? '玩家 1 胜出' : '玩家 2 胜出';
+  } else if (mode === 'hunter') {
     document.getElementById('go-title').textContent = '🔪 狩猎结束';
     document.getElementById('go-winner').textContent = `你击杀了 ${player ? player.kills : 0} 条蛇！`;
   } else if (mode === 'endless') {
@@ -2221,14 +2381,42 @@ function endGame() {
   }
 
   const prank = sorted.findIndex(s => s === player) + 1;
-  document.getElementById('go-result').textContent = `你的排名: 第 ${prank || '-'} 名 | 得分: ${player ? player.score : 0}`;
+  const resultEl = document.getElementById('go-result');
+  const statsEl = document.getElementById('go-stats');
+  const versusEl = document.getElementById('go-versus');
 
-  // Stats — detailed breakdown
-  if (player) {
-    const finalLength = player.maxLength;
-    const largestKill = player.kills > 0 ? ` | 击杀: ${player.kills}` : '';
-    document.getElementById('go-stats').textContent =
-      `吃食物: ${player.foodEaten} | 最大长度: ${finalLength} | 存活: ${Math.round(surviveTime)}秒${largestKill}`;
+  if (mode === 'local') {
+    // 双人：把「你的排名」换成两人对照
+    const p1 = snakes.find(s => s.isPlayer && !s.isPlayer2);
+    const p2s = snakes.find(s => s.isPlayer2);
+    const rankOf = (s) => (s ? sorted.findIndex(x => x === s) + 1 : '-');
+
+    const row = (label, s, isWin) =>
+      `<div class="vs-row${isWin ? ' win' : ''}">` +
+        `<span class="vs-name">${label}${s && !s.alive ? ' 💀' : ''}</span>` +
+        `<span class="vs-score">${s ? s.score : 0} 分</span>` +
+        `<span class="vs-rank">第 ${rankOf(s)} 名</span>` +
+      `</div>`;
+
+    versusEl.innerHTML =
+      row('P1', p1, versusWinner === 'P1') + row('P2', p2s, versusWinner === 'P2');
+    versusEl.classList.remove('hidden');
+    resultEl.classList.add('hidden');
+    statsEl.classList.add('hidden');
+  } else {
+    // 单人：恢复原来的两行，并确保上一局双人留下的对照表不会残留
+    versusEl.classList.add('hidden');
+    resultEl.classList.remove('hidden');
+    statsEl.classList.remove('hidden');
+
+    resultEl.textContent = `你的排名: 第 ${prank || '-'} 名 | 得分: ${player ? player.score : 0}`;
+
+    if (player) {
+      const finalLength = player.maxLength;
+      const largestKill = player.kills > 0 ? ` | 击杀: ${player.kills}` : '';
+      statsEl.textContent =
+        `吃食物: ${player.foodEaten} | 最大长度: ${finalLength} | 存活: ${Math.round(surviveTime)}秒${largestKill}`;
+    }
   }
 
   // Leaderboard
@@ -4760,6 +4948,7 @@ function startGame() {
     document.getElementById('hud-fuel').classList.remove('hidden');
     document.getElementById('hud-powerup').classList.add('hidden');
     document.getElementById('btn-pause').classList.remove('hidden');
+    syncHudMode();
     document.getElementById('kill-feed').innerHTML = '';
     initGame();
   };
@@ -4859,9 +5048,26 @@ function initGame() {
 }
 
 
+/**
+ * 按当前模式切换 HUD 布局。
+ *
+ * 双人对战下两名玩家各有一块计分板（左上 / 右上），中间那套只留时间；
+ * 单人模式下计分板隐藏，中间那套照常显示全部四项。
+ * 除了切显隐，还要给 <body> 挂 mode-local —— CSS 靠它决定中间那套
+ * 显示哪几个格子。用样式表控制而不是逐个元素写 style，是为了让
+ * 「哪些格子属于谁」这件事集中在一处，不至于散落在 JS 和 HTML 两边。
+ */
+function syncHudMode() {
+  const isLocal = mode === 'local';
+  document.body.classList.toggle('mode-local', isLocal);
+  document.getElementById('hud-p1').classList.toggle('hidden', !isLocal);
+  document.getElementById('hud-p2').classList.toggle('hidden', !isLocal);
+}
+
 function backToHome() {
   state = 'home';
-  ['hud', 'hud-fuel', 'hud-powerup', 'btn-pause'].forEach(id => document.getElementById(id).classList.add('hidden'));
+  ['hud', 'hud-fuel', 'hud-powerup', 'btn-pause', 'hud-p1', 'hud-p2'].forEach(id => document.getElementById(id).classList.add('hidden'));
+  document.body.classList.remove('mode-local');
   document.getElementById('kill-feed').innerHTML = '';
   showPanel('home');
   hidePanel('game-over-panel');
