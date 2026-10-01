@@ -354,7 +354,18 @@ html[data-lang="en"] .zh { display: none !important; }
   white-space: nowrap;
 }
 
-.tag-accent { background: var(--accent-soft); border-color: transparent; color: var(--accent); font-weight: 600; }
+/* 强调标签用无衬线体而不是等宽体 —— 等宽体是给技术名词（Python、Flask）用的，
+   放到「在线 demo」这种中英混排上会显得歪斜。字号也提一档。 */
+.tag-accent {
+  background: var(--accent-soft);
+  border-color: transparent;
+  color: var(--accent);
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 12.5px;
+  letter-spacing: .02em;
+  padding: 3px 10px;
+}
 
 /* ---------- 作品详情页 ---------- */
 

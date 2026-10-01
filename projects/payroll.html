@@ -51,10 +51,6 @@
         <dt><span class="zh">技术栈</span><span class="en">Stack</span></dt>
         <dd>Python · Flask · SQLAlchemy · SQLite · openpyxl · Quill</dd>
       </div>
-      <div>
-        <dt><span class="zh">形态</span><span class="en">Form</span></dt>
-        <dd><span class="zh">内部 Web 工具（源码不公开）</span><span class="en">Internal web tool (source private)</span></dd>
-      </div>
     </dl>
   </section>
 
@@ -157,14 +153,6 @@
           </tbody>
         </table>
       </div>
-      <p>
-        <span class="zh">权限判断收敛在一个函数里（<code>project_access_denied</code>），所有涉及项目数据的路由都调用它，
-          而不是各自写一套 if。这样新增路由时漏掉校验的概率要低得多——这个工具最初的问题正是有 8 个接口完全没做校验。</span>
-        <span class="en">Access decisions funnel through a single function (<code>project_access_denied</code>) that every
-          project-scoped route calls, rather than each route rolling its own check. That makes it much harder to forget on a
-          new route — the original problem here was exactly eight endpoints with no check at all.</span>
-      </p>
-
       <h2><span class="zh">界面截图</span><span class="en">Screenshots</span></h2>
       <figure class="shot">
         <img src="../assets/img/payroll-list.png" alt="项目列表：进度、状态与负责人一览">
@@ -184,42 +172,33 @@
       <h2><span class="zh">量化成果</span><span class="en">Outcomes</span></h2>
       <div class="metrics">
         <div class="metric">
-          <div class="n">8</div>
-          <div class="k"><span class="zh">补齐权限校验的接口</span><span class="en">endpoints given access checks</span></div>
+          <div class="n">100</div>
+          <div class="k"><span class="zh">个国家的薪酬规则</span><span class="en">countries' payroll rules covered</span></div>
         </div>
         <div class="metric">
-          <div class="n">4</div>
-          <div class="k"><span class="zh">类会静默丢数据的缺陷</span><span class="en">classes of silent data-loss bugs fixed</span></div>
+          <div class="n">~8,000+</div>
+          <div class="k"><span class="zh">行待校验规则</span><span class="en">rule rows to verify</span></div>
         </div>
         <div class="metric">
-          <div class="n">3</div>
-          <div class="k"><span class="zh">种 Excel 格式支持</span><span class="en">legacy Excel formats supported</span></div>
+          <div class="n">~33,000+</div>
+          <div class="k"><span class="zh">个单元格逐条溯源</span><span class="en">cells traced to their source</span></div>
         </div>
         <div class="metric">
-          <div class="n">10</div>
-          <div class="k"><span class="zh">个测试用例</span><span class="en">test cases</span></div>
+          <div class="n">~3,000+</div>
+          <div class="k"><span class="zh">个失效链接被发现</span><span class="en">broken links identified</span></div>
         </div>
       </div>
       <p>
-        <span class="zh">四个会丢数据的缺陷都是同一类问题的不同表现：<strong>操作失败时没有把状态回退到安全点</strong>。
-          上传新文件时先删旧记录再解析，解析失败就等于删掉了全部人工审阅成果；保存字段时遇到数据库写锁竞争，
-          回滚了整个事务却仍返回成功；导出时用 <code>data_only</code> 读取，把公式连同缓存值一起写成了空白；
-          翻译失败时错误被吞掉，英文交付物里留了中文。修法各不相同，但都是先确认成功、再提交状态。</span>
-        <span class="en">All four are the same underlying mistake wearing different clothes: <strong>failing to roll back to a
-          safe state when an operation fails</strong>. An upload deleted the old records before parsing the new file, so a parse
-          failure destroyed every manual review. A field save hit a SQLite write-lock, rolled back its transaction, and still
-          reported success. An export read with <code>data_only</code>, writing formulas out as blanks along with their cached
-          values. A translation failure was swallowed, leaving Chinese text in an English deliverable. The fixes differ; the
-          principle is the same — confirm success before committing state.</span>
-      </p>
-
-      <h2><span class="zh">关于源码</span><span class="en">About the source</span></h2>
-      <p>
-        <span class="zh">这个工具围绕真实业务的薪酬合规口径构建，手册内容、字段体系与业务规则均为内部信息，因此源码不公开。
-          以上展示的是设计与工程取舍，不含任何业务数据。</span>
-        <span class="en">This tool is built around a real compliance framework — the handbook content, field structure and
-          business rules are internal, so the source is not public. What's shown here is the design and the engineering
-          decisions, with no business data.</span>
+        <span class="zh">校验方式是<strong>逐条打开溯源链接、对照原文、标注问题</strong>：100 个国家，每个国家几十到几百条规则，
+          每条规则又要逐个单元格打开引用网址人工核对。定位出的问题分四类——数据缺失、内容错误、链接失效、信息过时，
+          合计 30 多项。其中链接失效占比最高（政府网站改版、页面迁移导致的 404）。
+          校验结果反馈给数据生产方，对方调整抓取逻辑后重新生成，再进入下一轮校验，形成闭环。</span>
+        <span class="en">Verification meant <strong>opening each cited source, comparing it against the extracted content, and
+          flagging discrepancies</strong>: 100 countries, tens to hundreds of rules each, and every cell in a rule traced back to
+          its cited URL by hand. Findings fell into four categories — missing data, wrong content, dead links and outdated
+          information — 30-odd distinct issues in total, with dead links the most common (government sites restructuring and
+          breaking URLs). Results went back to the data producers, who adjusted their crawlers and regenerated the dataset for
+          the next review round.</span>
       </p>
 
     </div>

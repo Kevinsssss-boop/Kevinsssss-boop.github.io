@@ -53,10 +53,6 @@
         <dt><span class="zh">技术栈</span><span class="en">Stack</span></dt>
         <dd>Electron · React · TypeScript · Ant Design · sql.js · pdf.js</dd>
       </div>
-      <div>
-        <dt><span class="zh">形态</span><span class="en">Form</span></dt>
-        <dd><span class="zh">内部桌面应用（源码不公开）</span><span class="en">Internal desktop app (source private)</span></dd>
-      </div>
     </dl>
   </section>
 
@@ -163,11 +159,10 @@
       </div>
       <p>
         <span class="zh">处理链路分六步：<strong>导入 → 取文本 → 分类 → 提取 → 核对 → 导出</strong>。
-          每一步都能独立失败，而失败时的状态回退是这套代码里最需要小心的地方——
-          最初版本的问题几乎全部集中在「出错之后」，而不是「正常流程」。</span>
+          每份文件独立走完这条链路，一份失败不影响其余；失败的会保留原文件与失败原因，可以单独重试。</span>
         <span class="en">The pipeline has six steps: <strong>import → text → classify → extract → review → export</strong>.
-          Each can fail independently, and rolling back cleanly on failure is the delicate part — nearly every bug in the
-          original version lived in the failure paths, not the happy path.</span>
+          Each file travels the chain independently, so one failure doesn't affect the rest — a failed file keeps its source
+          and its reason, and can be retried on its own.</span>
       </p>
 
       <h2><span class="zh">界面截图</span><span class="en">Screenshots</span></h2>
@@ -193,31 +188,35 @@
       <h2><span class="zh">量化成果</span><span class="en">Outcomes</span></h2>
       <div class="metrics">
         <div class="metric">
-          <div class="n">9</div>
-          <div class="k"><span class="zh">类缺陷修复</span><span class="en">classes of bugs fixed</span></div>
+          <div class="n">1447</div>
+          <div class="k"><span class="zh">份合同完成提取</span><span class="en">contracts extracted</span></div>
         </div>
         <div class="metric">
-          <div class="n">6</div>
-          <div class="k"><span class="zh">类错误被静默吞掉</span><span class="en">of them were silent failures</span></div>
+          <div class="n">47</div>
+          <div class="k"><span class="zh">个结构化字段</span><span class="en">structured fields per contract</span></div>
         </div>
         <div class="metric">
-          <div class="n">11</div>
-          <div class="k"><span class="zh">个测试用例</span><span class="en">test cases</span></div>
+          <div class="n">3532×139</div>
+          <div class="k"><span class="zh">三方比对表规模</span><span class="en">rows × columns in the reconciliation table</span></div>
         </div>
         <div class="metric">
-          <div class="n">40+</div>
-          <div class="k"><span class="zh">个提取字段</span><span class="en">fields extracted per contract</span></div>
+          <div class="n">1584</div>
+          <div class="k"><span class="zh">条人员异常记录</span><span class="en">data anomalies catalogued</span></div>
         </div>
       </div>
       <p>
-        <span class="zh">最典型的一类是<strong>「静默失败」</strong>：程序出错了，但界面上显示成功。
-          比如密码错误会被当成可重试的临时故障吞掉，文件最终被标记为「已完成」并写入一整批空字段；
-          重提时会先删旧记录再调模型，模型一失败，此前所有人工修正值净丢，而文件仍显示成功。
-          这类问题比直接崩溃更危险——崩溃至少会让人知道出了事。</span>
-        <span class="en">The dominant pattern was <strong>silent failure</strong> — something went wrong and the UI said success.
-          A wrong password was swallowed as a retryable error, so the file was marked complete with a full set of empty fields.
-          Reprocessing deleted the old records before calling the model, so any model failure destroyed every manual correction
-          while still reporting success. These are more dangerous than a crash: a crash at least announces itself.</span>
+        <span class="zh">提取只是第一步，数据要导入内部员工管理系统，而来源不止一处——
+          合同提取结果、系统导出、供应商交付三份数据需要逐条对齐。
+          比对表规模 <strong>3532 行 × 139 列</strong>，用 VLOOKUP、条件格式和数据透视表逐条核对：
+          一致的通过，不一致的回到合同原文确认后再改。
+          过程中另外汇总出 <strong>1584 条人员异常记录</strong>，按问题类型、字段类别、数据来源三个维度分类，
+          形成一份数据质量分析报告，作为后续规则调整的依据。</span>
+        <span class="en">Extraction was only the first step — the data had to land in the internal HR system, and it arrived from
+          three places: the extracted results, the system's own export, and a vendor delivery. All three had to be reconciled row
+          by row across a <strong>3532 × 139</strong> comparison table, using VLOOKUP, conditional formatting and pivot tables:
+          matching entries passed, mismatches went back to the contract for confirmation. The exercise also surfaced
+          <strong>1584 personnel data anomalies</strong>, catalogued by issue type, field category and data source into a data
+          quality report that fed back into the rules.</span>
       </p>
 
       <h2><span class="zh">数据流向</span><span class="en">Where the data goes</span></h2>
@@ -229,14 +228,6 @@
           extraction, and scanned pages go as images to an OCR provider. Everything is stored locally, but those two calls are
           what makes extraction possible. Anyone deploying it internally should know that up front.</span>
       </div>
-
-      <h2><span class="zh">关于源码</span><span class="en">About the source</span></h2>
-      <p>
-        <span class="zh">字段体系、校验规则与提示词围绕真实业务口径设计，属于内部信息，因此源码不公开。
-          以上展示的是工程判断，不含业务数据。</span>
-        <span class="en">The field schema, validation rules and prompts are built around a real business framework and count as
-          internal, so the source is not public. What's here is the engineering judgement, with no business data.</span>
-      </p>
 
     </div>
   </section>
