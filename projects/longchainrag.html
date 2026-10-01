@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title data-zh="LongChainRAG — 江学文" data-en="LongChainRAG — Kevin Jiang">LongChainRAG — 江学文</title>
+<title data-zh="LongChainRAG — Kevin" data-en="LongChainRAG — Kevin">LongChainRAG — Kevin</title>
 <meta name="description" content="检索增强问答系统的完整实现：文档入库、混合检索、重排序、带引用的回答。">
 <script>
 (function(){
@@ -24,10 +24,10 @@
 
 <header class="site-header">
   <div class="wrap">
-    <a class="brand" href="../index.html">Kevin <span>江学文</span></a>
+    <a class="brand" href="../index.html">Kevin</a>
     <nav class="nav">
-      <a href="../index.html#work" aria-current="page"><span class="zh">作品</span><span class="en">Work</span></a>
-      <a href="../index.html#about"><span class="zh">关于</span><span class="en">About</span></a>
+      <a href="../work.html" aria-current="page"><span class="zh">作品集</span><span class="en">Work</span></a>
+      <a href="../about.html"><span class="zh">关于</span><span class="en">About</span></a>
       <a href="../index.html#contact"><span class="zh">联系</span><span class="en">Contact</span></a>
     </nav>
     <div class="header-tools">
@@ -40,26 +40,18 @@
 <main>
 
   <section class="wrap proj-hero">
-    <a class="back-link" href="../index.html#work">← <span class="zh">返回作品</span><span class="en">All work</span></a>
+    <a class="back-link" href="../work.html">← <span class="zh">返回作品集</span><span class="en">All work</span></a>
     <h1>LongChainRAG</h1>
     <p class="lede">
       <span class="zh">一个检索增强问答系统的完整实现：把文档灌进知识库，提问时先检索再回答，
-        并且每个结论都能点回到原文片段。面向电商商品知识库场景。</span>
+        并且<strong>每个结论都能点回到原文片段</strong>。面向电商商品知识库场景。</span>
       <span class="en">An end-to-end retrieval-augmented QA system: ingest documents, retrieve before answering, and let every
         claim link back to the passage it came from. Built for an e-commerce product knowledge base.</span>
     </p>
     <dl class="proj-meta">
       <div>
-        <dt><span class="zh">类型</span><span class="en">Type</span></dt>
-        <dd><span class="zh">课程项目 · 前后端分离</span><span class="en">Coursework · split frontend/backend</span></dd>
-      </div>
-      <div>
         <dt><span class="zh">技术栈</span><span class="en">Stack</span></dt>
         <dd>FastAPI · LangChain · ChromaDB · SQLAlchemy · React · TypeScript · Ant Design</dd>
-      </div>
-      <div>
-        <dt><span class="zh">我的角色</span><span class="en">My role</span></dt>
-        <dd><span class="zh">独立完成</span><span class="en">Solo</span></dd>
       </div>
       <div>
         <dt><span class="zh">源码</span><span class="en">Source</span></dt>
@@ -69,115 +61,215 @@
   </section>
 
   <section class="wrap section">
-    <div class="note note-warn">
-      <span class="zh"><strong>没有在线 demo。</strong>这个项目的后端是一个需要 Python 运行环境、向量数据库
-        和大模型 API Key 的常驻服务。把它跑在免费托管上要么会休眠、要么会在被访问时产生费用，
-        而且需要把一个可用的 API Key 放在公开可访问的服务里——这两件事我都不想接受。
-        所以这里展示的是设计与代码，想跑的话按 README 本地启动即可。</span>
-      <span class="en"><strong>No live demo.</strong> The backend is a long-running service that needs a Python runtime, a vector
-        database and an LLM API key. Hosting that for free means either cold starts or unexpected bills, and it means putting a
-        working API key behind a publicly reachable endpoint — neither of which I'm willing to do. So what's here is the design
-        and the code; the README covers running it locally.</span>
+    <div class="note">
+      <span class="zh"><strong>没有在线 demo。</strong>它的后端是一个需要 Python 运行环境、向量数据库和大模型 API Key 的常驻服务。
+        免费托管要么会休眠、要么在被访问时产生费用，而且需要把一个可用的 API Key 放在公开可访问的服务里——
+        这两件事我都不想接受。想跑的话按 README 本地启动即可。</span>
+      <span class="en"><strong>No live demo.</strong> The backend is a long-running service needing a Python runtime, a vector
+        database and an LLM API key. Hosting that for free means either cold starts or surprise bills, and it means putting a
+        working API key behind a publicly reachable endpoint — neither of which I'm willing to do. The README covers running it
+        locally.</span>
     </div>
   </section>
 
   <section class="wrap section">
     <div class="prose">
 
-      <h2><span class="zh">RAG 里最容易被低估的一步是检索</span><span class="en">Retrieval is the underrated half of RAG</span></h2>
+      <h2><span class="zh">项目背景</span><span class="en">Background</span></h2>
       <p>
-        <span class="zh">大多数人第一次做 RAG 会把注意力放在提示词上，但实际决定回答质量的是「有没有把正确的段落捞出来」。
-          提示词写得再好，检索没召回目标段落，模型也只能编。所以这个项目在检索链路上做了三层——</span>
-        <span class="en">Most people building their first RAG system focus on the prompt. What actually decides answer quality is
-          whether the right passage got retrieved — a perfect prompt can't help if the passage never made it into context. So the
-          retrieval path here has three layers.</span>
+        <span class="zh">电商场景下的商品知识分散在退换货政策、保修条款、物流说明等一堆文档里。
+          客服回答问题时需要逐份翻找，且不同的人对同一条政策的理解可能不一致。
+          直接问大模型也不行——模型不知道这些内部文档，会编造看起来合理的答案。</span>
+        <span class="en">In an e-commerce setting, product knowledge is scattered across return policies, warranty terms,
+          shipping notes and more. Support staff hunt through documents to answer, and different people read the same policy
+          differently. Asking a model directly doesn't work either: it has never seen those internal documents and will
+          invent a plausible answer.</span>
+      </p>
+      <p>
+        <span class="zh">检索增强生成（RAG）解决的就是这个问题：先从知识库里检索出相关段落，
+          再让模型<strong>只依据这些段落</strong>作答。这个项目是对这条链路的完整实现——
+          文档入库、检索、重排序、生成、引用回溯。</span>
+        <span class="en">Retrieval-augmented generation addresses exactly that: fetch the relevant passages first, then have the
+          model answer <strong>only from those passages</strong>. This project is a full implementation of that chain —
+          ingestion, retrieval, reranking, generation and citation.</span>
       </p>
 
-      <h3><span class="zh">一、混合检索：向量 + 关键词</span><span class="en">1. Hybrid retrieval: vectors plus keywords</span></h3>
+      <h2><span class="zh">核心功能</span><span class="en">Core features</span></h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th><span class="zh">功能</span><span class="en">Feature</span></th>
+              <th><span class="zh">说明</span><span class="en">What it does</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="zh">知识库管理</span><span class="en">Knowledge base</span></td>
+              <td><span class="zh">上传 PDF / TXT / CSV / Markdown，自动分块、向量化入库，可查看每个文档切出的分块</span><span class="en">Upload PDF / TXT / CSV / Markdown; automatic chunking and indexing, with the chunks of each document viewable</span></td>
+            </tr>
+            <tr>
+              <td><span class="zh">带引用的回答</span><span class="en">Cited answers</span></td>
+              <td><span class="zh">回答中标出每段结论来自哪个片段，附来源文件名与相似度，可展开看原文</span><span class="en">Each claim is traced to its passage, with source file and similarity score, expandable to the original text</span></td>
+            </tr>
+            <tr>
+              <td><span class="zh">流式输出</span><span class="en">Streaming</span></td>
+              <td><span class="zh">逐字返回，不用等整段生成完</span><span class="en">Token-by-token rather than waiting for the whole answer</span></td>
+            </tr>
+            <tr>
+              <td><span class="zh">多用户与会话</span><span class="en">Users and sessions</span></td>
+              <td><span class="zh">JWT 认证、会话隔离与历史保存；管理员可管理知识库，普通用户只能问答</span><span class="en">JWT auth, isolated sessions, saved history; admins manage the knowledge base while regular users only ask questions</span></td>
+            </tr>
+            <tr>
+              <td><span class="zh">语义缓存</span><span class="en">Semantic cache</span></td>
+              <td><span class="zh">相似度超过阈值的问题直接命中缓存，省掉一次完整的检索与生成</span><span class="en">Questions above a similarity threshold hit the cache, skipping a full retrieval and generation cycle</span></td>
+            </tr>
+            <tr>
+              <td><span class="zh">接口限流</span><span class="en">Rate limiting</span></td>
+              <td><span class="zh">按接口限制调用频率，避免单个用户占满模型配额</span><span class="en">Per-endpoint limits so one user can't exhaust the model quota</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2><span class="zh">技术架构</span><span class="en">Architecture</span></h2>
       <p>
-        <span class="zh">纯向量检索对语义相近的表述很好，但对型号、编号、专有名词这类「必须逐字命中」的查询很糟——
-          语义空间里「X200」和「X300」几乎挨在一起。补齐的做法是同时跑一路 BM25 关键词检索，
+        <span class="zh">RAG 里最容易被低估的一步是<strong>检索</strong>。多数人第一次做会把注意力放在提示词上，
+          但真正决定回答质量的是「有没有把正确的段落捞出来」——提示词写得再好，检索没召回目标段落，
+          模型也只能编。所以检索链路做了三层：</span>
+        <span class="en">Retrieval is the most underrated half of RAG. Most first attempts focus on the prompt, but what decides
+          answer quality is whether the right passage got retrieved — a perfect prompt can't help if it never made it into
+          context. So the retrieval path has three layers.</span>
+      </p>
+
+      <h3><span class="zh">一、混合检索：向量 + 关键词</span><span class="en">1. Hybrid retrieval</span></h3>
+      <p>
+        <span class="zh">纯向量检索擅长语义相近的表述，但对型号、编号、专有名词这类必须逐字命中的查询很糟——
+          在语义空间里，「X200」和「X300」几乎挨在一起。所以同时跑一路 BM25 关键词检索，
           再把两路结果按 <strong>RRF（倒数排名融合）</strong>合并：</span>
-        <span class="en">Pure vector search handles paraphrase well but is bad at model numbers, IDs and proper nouns — the things
-          that must match literally. In embedding space "X200" and "X300" sit almost on top of each other. So a BM25 keyword pass
-          runs alongside it, and the two result sets are merged with <strong>Reciprocal Rank Fusion</strong>:</span>
+        <span class="en">Pure vector search handles paraphrase well but fails on model numbers, IDs and proper nouns — the things
+          that must match literally. In embedding space "X200" and "X300" sit almost on top of each other. A BM25 keyword pass
+          runs alongside it, and the two result sets merge via <strong>Reciprocal Rank Fusion</strong>:</span>
       </p>
       <p style="padding-left:18px;border-left:2px solid var(--border);color:var(--text-muted);">
         <code>score(d) = Σ 1 / (k + rank_i(d))</code>　（<code>k = 60</code>）
       </p>
       <p>
-        <span class="zh">用排名而不是用分数融合，是因为两路检索的分数量纲根本不可比——余弦距离和 BM25 分数没有共同尺度，
-          归一化也只是掩盖问题。排名是无量纲的，融合起来才稳。</span>
-        <span class="en">Fusing on rank rather than score is the point: cosine distance and BM25 scores have no common scale, and
-          normalising them just hides that. Ranks are dimensionless, so fusing them is stable.</span>
-      </p>
-      <p>
-        <span class="zh">顺带一提，BM25 依赖在导入失败时不会让整个服务起不来——检索降级为纯向量，并留一条日志说明。
-          一个可选依赖不该让主流程挂掉。</span>
-        <span class="en">The BM25 dependency also degrades gracefully: if the import fails the service still starts, retrieval
-          falls back to vectors only, and a log line records it. An optional dependency shouldn't take down the main path.</span>
+        <span class="zh">用<strong>排名</strong>而不是用分数融合，是这里的关键：两路检索的分数量纲根本不可比——
+          余弦距离和 BM25 分数没有共同尺度，归一化只是把问题掩盖过去。排名是无量纲的，融合起来才稳。</span>
+        <span class="en">Fusing on <strong>rank</strong> rather than score is the point: cosine distance and BM25 scores have no
+          common scale, and normalising them just hides that. Ranks are dimensionless, so fusing them is stable.</span>
       </p>
 
-      <h3><span class="zh">二、重排序：保证来源多样</span><span class="en">2. Reranking: guaranteeing source diversity</span></h3>
+      <h3><span class="zh">二、重排序：保证来源多样</span><span class="en">2. Reranking with source diversity</span></h3>
       <p>
-        <span class="zh">检索回来的前几条经常来自同一份文档的相邻段落——它们内容重复，却把上下文位置全占了，
+        <span class="zh">检索回来的前几条经常来自同一份文档的相邻段落——内容高度重复，却把上下文位置全占了，
           其他文档里真正相关的段落反而进不来。重排序在按相关度排序之后，先保证每份来源文档至少有一条入选，
           再用剩下的名额按分数补齐。</span>
-        <span class="en">The top hits often come from adjacent chunks of the same document — near-duplicates that crowd out the
-          context window while genuinely relevant passages from other documents never make it in. The reranker sorts by relevance,
-          then guarantees at least one chunk per source document before filling the remaining slots by score.</span>
+        <span class="en">The top hits often come from adjacent chunks of one document — near-duplicates that crowd out the context
+          window while genuinely relevant passages from other documents never make it in. The reranker sorts by relevance, then
+          guarantees at least one chunk per source document before filling the remaining slots by score.</span>
       </p>
       <p>
-        <span class="zh">实现上没有引入交叉编码器模型——那会带来一个额外的模型下载和推理开销。
-          这里用的是检索阶段已有的分数做排序，对规模不大的知识库足够，也保持了零额外依赖。</span>
-        <span class="en">No cross-encoder model is involved — that would add a model download and inference cost. Ranking uses the
-          scores retrieval already produced, which is enough at this scale and keeps the dependency list short.</span>
+        <span class="zh">这里没有引入交叉编码器模型——那会带来额外的模型下载和推理开销。
+          用的是检索阶段已有的分数，对当前规模足够，也保持了依赖列表的简短。</span>
+        <span class="en">No cross-encoder is involved — that would add a model download and inference cost. Ranking uses scores
+          retrieval already produced, which is enough at this scale and keeps the dependency list short.</span>
       </p>
 
-      <h3><span class="zh">三、带引用的回答</span><span class="en">3. Answers carry citations</span></h3>
+      <h3><span class="zh">三、引用回溯</span><span class="en">3. Citations</span></h3>
       <p>
-        <span class="zh">模型被要求只依据检索到的片段作答，并标注每句话来自哪个片段；界面上这些引用可以点开看原文。
-          这既是给用户的信任依据，也是调试检索质量最直接的手段——回答错了，看引用就知道是检索没捞到还是模型读错了。</span>
-        <span class="en">The model is instructed to answer only from retrieved passages and to mark which passage supports each
-          statement; in the UI those citations open the original text. That's trust for the reader, and it's also the fastest way
-          to debug retrieval — when an answer is wrong, the citations tell you whether retrieval missed or the model misread.</span>
+        <span class="zh">模型被要求只依据检索到的片段作答，并标注每句话来自哪一段。这既是给用户的信任依据，
+          也是调试检索质量最直接的手段——回答错了，看引用就知道是检索没捞到，还是模型读错了。</span>
+        <span class="en">The model answers only from retrieved passages and marks which one supports each statement. That is trust
+          for the reader, and it is also the fastest way to debug retrieval: when an answer is wrong, the citations say whether
+          retrieval missed or the model misread.</span>
       </p>
 
-      <h2><span class="zh">工程上还做了什么</span><span class="en">Other engineering work</span></h2>
+      <h3><span class="zh">技术选型</span><span class="en">Stack choices</span></h3>
       <div class="table-wrap">
         <table>
           <thead>
             <tr>
-              <th><span class="zh">方面</span><span class="en">Area</span></th>
-              <th><span class="zh">做法</span><span class="en">Approach</span></th>
+              <th><span class="zh">层级</span><span class="en">Layer</span></th>
+              <th><span class="zh">选型</span><span class="en">Choice</span></th>
+              <th><span class="zh">理由</span><span class="en">Why</span></th>
             </tr>
           </thead>
           <tbody>
-            <tr><td><span class="zh">流式输出</span><span class="en">Streaming</span></td>
-                <td><span class="zh">逐字返回，不等整段生成完</span><span class="en">Token-by-token rather than waiting for the whole answer</span></td></tr>
-            <tr><td><span class="zh">语义缓存</span><span class="en">Semantic cache</span></td>
-                <td><span class="zh">相近的问题直接命中缓存，省掉一次完整检索和生成</span><span class="en">Near-duplicate questions hit the cache, skipping retrieval and generation</span></td></tr>
-            <tr><td><span class="zh">多用户</span><span class="en">Multi-user</span></td>
-                <td><span class="zh">JWT 认证 · 会话隔离 · 管理员与普通用户权限区分</span><span class="en">JWT auth · isolated sessions · separate admin and user permissions</span></td></tr>
-            <tr><td><span class="zh">限流</span><span class="en">Rate limiting</span></td>
-                <td><span class="zh">接口级限流，避免单个用户占满模型配额</span><span class="en">Per-endpoint limits so one user can't exhaust the model quota</span></td></tr>
-            <tr><td><span class="zh">可测性</span><span class="en">Testability</span></td>
-                <td><span class="zh">有一个压力测试模式，把全部外部 API 调用替换为确定性的模拟实现——
-                  不需要 Key、不产生费用就能跑通完整链路</span><span class="en">A stress-test mode replaces every external API call with a deterministic stub, so the whole pipeline runs with no key and no cost</span></td></tr>
-            <tr><td><span class="zh">文档格式</span><span class="en">Formats</span></td>
-                <td><span class="zh">PDF / TXT / CSV / Markdown 上传、分块、向量化入库</span><span class="en">Upload, chunk and index PDF / TXT / CSV / Markdown</span></td></tr>
+            <tr>
+              <td><span class="zh">后端</span><span class="en">Backend</span></td>
+              <td>FastAPI</td>
+              <td><span class="zh">流式响应（SSE）是问答体验的核心，异步支持是选它的主要原因</span><span class="en">Streaming (SSE) is central to the experience; async support is the main reason for choosing it</span></td>
+            </tr>
+            <tr>
+              <td><span class="zh">向量库</span><span class="en">Vector store</span></td>
+              <td>ChromaDB</td>
+              <td><span class="zh">可嵌入式部署，不需要单独起服务；LangChain 原生集成</span><span class="en">Embeddable with no separate service to run; native LangChain integration</span></td>
+            </tr>
+            <tr>
+              <td><span class="zh">关系库</span><span class="en">Relational DB</span></td>
+              <td>SQLite + SQLAlchemy</td>
+              <td><span class="zh">存用户、会话与消息；单机部署下够用且零运维</span><span class="en">Users, sessions and messages; sufficient for single-node deployment with no operations overhead</span></td>
+            </tr>
+            <tr>
+              <td><span class="zh">前端</span><span class="en">Frontend</span></td>
+              <td>React + TypeScript + Ant Design</td>
+              <td><span class="zh">问答界面需要列表、上传、Markdown 渲染这些成熟组件</span><span class="en">The UI needs lists, uploads and Markdown rendering — all mature components</span></td>
+            </tr>
           </tbody>
         </table>
       </div>
 
-      <h2><span class="zh">关于这个项目</span><span class="en">Origin</span></h2>
+      <h2><span class="zh">界面截图</span><span class="en">Screenshots</span></h2>
+      <figure class="shot">
+        <img src="../assets/img/lcr-chat.png" alt="问答界面：回答下方列出参考来源与相似度">
+        <figcaption>
+          <span class="zh">问答界面——回答下方是「参考来源」，每条引用标注来源文档与相似度，可展开查看原文片段。
+            这是判断答案可信度的直接依据。</span>
+          <span class="en">Chat view — the answer is followed by its sources, each tagged with the originating document and a
+            similarity score, expandable to the original passage. This is what makes an answer checkable.</span>
+        </figcaption>
+      </figure>
+      <figure class="shot">
+        <img src="../assets/img/lcr-kb.png" alt="知识库管理：文档列表与分块统计">
+        <figcaption>
+          <span class="zh">知识库管理——文档列表显示类型、大小、分块数与入库状态，可查看任意文档切出的分块。</span>
+          <span class="en">Knowledge base — documents with type, size, chunk count and indexing status; the chunks of any document
+            can be inspected.</span>
+        </figcaption>
+      </figure>
+      <p style="color:var(--text-faint);font-size:14px;">
+        <span class="zh">截图中的数据为合成样例（示例商品知识库），非真实业务内容。</span>
+        <span class="en">Data in these screenshots is a synthetic sample knowledge base, not real business content.</span>
+      </p>
+
+      <h2><span class="zh">量化成果</span><span class="en">Outcomes</span></h2>
+      <div class="metrics">
+        <div class="metric">
+          <div class="n">3</div>
+          <div class="k"><span class="zh">层检索链路</span><span class="en">layers in the retrieval path</span></div>
+        </div>
+        <div class="metric">
+          <div class="n">10→6</div>
+          <div class="k"><span class="zh">召回 → 精排条数</span><span class="en">retrieved then reranked</span></div>
+        </div>
+        <div class="metric">
+          <div class="n">4</div>
+          <div class="k"><span class="zh">种文档格式支持</span><span class="en">document formats supported</span></div>
+        </div>
+        <div class="metric">
+          <div class="n">100</div>
+          <div class="k"><span class="zh">并发压测用户数</span><span class="en">concurrent users in stress test</span></div>
+        </div>
+      </div>
       <p>
-        <span class="zh">这是我在学习检索增强生成时做的完整实现，重点不在「能问答」，而在于把检索这条链路上
-          每个环节都拆开想过一遍——为什么要混合检索、为什么要按排名融合、重排序解决的是什么问题。
-          这些判断是在动手之后才真正理解的，所以我把它们写在这里而不是藏在代码里。</span>
-        <span class="en">I built this while learning retrieval-augmented generation. The point wasn't "it answers questions" but
-          taking each stage of the retrieval path apart — why hybrid search, why fuse on rank, what reranking is actually for.
-          Those are judgements I only understood by building it, which is why they're written down here instead of left in the code.</span>
+        <span class="zh">项目带一套 <strong>Locust 压力测试</strong>（100 并发用户、模拟完整的登录→建会话→流式问答流程），
+          以及一个<strong>压力测试模式</strong>：打开后所有外部 API 调用被替换为确定性的模拟实现，
+          不需要 API Key、不产生费用就能跑通完整链路——这也是能对处理流程做端到端测试的前提。</span>
+        <span class="en">The project ships a <strong>Locust stress suite</strong> (100 concurrent users replaying login → create
+          session → streamed Q&amp;A) and a <strong>stress-test mode</strong> that swaps every external API call for a deterministic
+          stub — the whole chain runs with no key and no cost, which is also what makes end-to-end tests practical.</span>
       </p>
 
     </div>
@@ -187,10 +279,10 @@
 
 <footer class="site-footer">
   <div class="wrap">
-    <div>© 2026 Kevin 江学文</div>
+    <div>© 2026 Kevin</div>
     <div class="footer-links">
-      <a href="../index.html#work"><span class="zh">返回作品</span><span class="en">All work</span></a>
-      <a href="https://github.com/Kevinsssss-boop/LongChainRAG" target="_blank" rel="noopener">GitHub</a>
+      <a href="../work.html"><span class="zh">返回作品集</span><span class="en">All work</span></a>
+      <a href="https://github.com/Kevinsssss-boop" target="_blank" rel="noopener">github.com/Kevinsssss-boop</a>
     </div>
   </div>
 </footer>

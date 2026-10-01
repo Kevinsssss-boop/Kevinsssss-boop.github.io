@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-lang="zh" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-zh="关于 — Kevin" data-en="About — Kevin">关于 — Kevin</title>
+<meta name="description" content="Kevin：广东财经大学在读，方向是数据分析。">
+<script>
+(function(){
+  try {
+    var t = localStorage.getItem('portfolio-theme');
+    if (!t) t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', t);
+    var l = localStorage.getItem('portfolio-lang');
+    if (!l) l = (navigator.language || 'zh').toLowerCase().indexOf('zh') === 0 ? 'zh' : 'en';
+    document.documentElement.setAttribute('data-lang', l);
+    document.documentElement.setAttribute('lang', l === 'zh' ? 'zh-CN' : 'en');
+  } catch (e) {}
+})();
+</script>
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="index.html">Kevin</a>
+    <nav class="nav">
+      <a href="work.html"><span class="zh">作品集</span><span class="en">Work</span></a>
+      <a href="about.html" aria-current="page"><span class="zh">关于</span><span class="en">About</span></a>
+      <a href="index.html#contact"><span class="zh">联系</span><span class="en">Contact</span></a>
+    </nav>
+    <div class="header-tools">
+      <button class="icon-btn" id="lang-toggle" type="button" aria-label="Switch to English">EN</button>
+      <button class="icon-btn" id="theme-toggle" type="button" aria-label="切换深色模式"></button>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <section class="wrap" style="padding:52px 0 8px;">
+    <div class="hero-grid">
+      <img class="avatar" src="assets/img/avatar.jpg" alt="Kevin" width="168" height="168">
+      <div>
+        <h1 style="font-size:clamp(24px,3.4vw,32px);margin:0 0 12px;">Kevin</h1>
+        <p style="margin:0 0 18px;font-size:16px;color:var(--accent);font-weight:600;">
+          <span class="zh">数据分析 · 广东财经大学</span>
+          <span class="en">Data Analytics · Guangdong University of Finance &amp; Economics</span>
+        </p>
+        <div class="prose">
+          <p>
+            <span class="zh">我的兴趣在数据工具这一侧：把散落的、需要手工处理的表格和文档，变成能重复使用的流程。
+              作品集里的两个内部工具都是这么来的——它们跑在真实业务里、处理真实数据，所以源码不公开，
+              页面上讲的是设计和取舍。</span>
+            <span class="en">My interest sits on the tooling side of data: taking scattered spreadsheets and documents that
+              people process by hand, and turning them into something reusable. Both internal tools in the portfolio came
+              from that. They run against real business data, so the source stays private and what's written up here is the
+              design and the trade-offs.</span>
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap section">
+    <div class="section-head">
+      <h2><span class="zh">经历</span><span class="en">Background</span></h2>
+    </div>
+
+    <ul class="timeline">
+      <li>
+        <h3><span class="zh">数据治理实习</span><span class="en">Data Governance Intern</span></h3>
+        <div class="when">GSR</div>
+        <p>
+          <span class="zh">参与 HR SaaS 场景下的数据治理：合同字段提取、流程自动化、内部工具开发。
+            作品集里的两个工具都来自这段实习。</span>
+          <span class="en">Data governance in an HR SaaS context: contract field extraction, process automation and internal
+            tooling. Both tools in the portfolio came out of this internship.</span>
+        </p>
+      </li>
+      <li>
+        <h3><span class="zh">审计实习</span><span class="en">Audit Intern</span></h3>
+        <div class="when">KPMG</div>
+        <p>
+          <span class="zh">参与审计底稿整理与凭证抽查，接触函证流程。</span>
+          <span class="en">Worked on audit working papers and voucher sampling, with exposure to the confirmation process.</span>
+        </p>
+      </li>
+      <li>
+        <h3><span class="zh">正大杯市场调查与分析大赛</span><span class="en">Market Research &amp; Analysis Competition</span></h3>
+        <div class="when"><span class="zh">校赛一等奖</span><span class="en">First prize, university level</span></div>
+        <p>
+          <span class="zh">课题为播客知识付费。负责数据采集与分析环节。</span>
+          <span class="en">Topic: paid podcast knowledge products. Worked on data collection and analysis.</span>
+        </p>
+      </li>
+      <li>
+        <h3><span class="zh">创新创业大赛</span><span class="en">Innovation &amp; Entrepreneurship Competition</span></h3>
+        <div class="when"><span class="zh">校赛银奖</span><span class="en">Silver prize, university level</span></div>
+        <p>
+          <span class="zh">课题围绕乡村振兴与直播助农。</span>
+          <span class="en">Topic: rural revitalisation through livestream-supported agriculture.</span>
+        </p>
+      </li>
+      <li>
+        <h3><span class="zh">课题组科研</span><span class="en">Research Group</span></h3>
+        <div class="when"><span class="zh">社会保障比较研究</span><span class="en">Comparative social security research</span></div>
+        <p>
+          <span class="zh">参与社会保障政策的比较研究与文献整理。</span>
+          <span class="en">Comparative research and literature work on social security policy.</span>
+        </p>
+      </li>
+    </ul>
+  </section>
+
+  <section class="wrap section">
+    <div class="section-head">
+      <h2><span class="zh">用过的工具</span><span class="en">Tools I work with</span></h2>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th><span class="zh">场景</span><span class="en">Task</span></th>
+            <th><span class="zh">用什么</span><span class="en">Stack</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="zh">数据处理与分析</span><span class="en">Data processing</span></td>
+            <td>Python（pandas、openpyxl）、SQL、Excel</td>
+          </tr>
+          <tr>
+            <td><span class="zh">后端与接口</span><span class="en">Backend</span></td>
+            <td>Flask、FastAPI、SQLAlchemy、SQLite</td>
+          </tr>
+          <tr>
+            <td><span class="zh">前端与桌面端</span><span class="en">Frontend / desktop</span></td>
+            <td>React、TypeScript、Electron、原生 JavaScript</td>
+          </tr>
+          <tr>
+            <td><span class="zh">统计与建模</span><span class="en">Statistics</span></td>
+            <td>SPSS、AMOS</td>
+          </tr>
+          <tr>
+            <td><span class="zh">数据可视化</span><span class="en">Visualisation</span></td>
+            <td>Recharts、matplotlib</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="wrap section">
+    <div class="section-head">
+      <h2><span class="zh">联系</span><span class="en">Contact</span></h2>
+    </div>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="mailto:91cjwapc@gmail.com">91cjwapc@gmail.com</a>
+      <a class="btn btn-ghost" href="https://github.com/Kevinsssss-boop" target="_blank" rel="noopener">GitHub · Kevinsssss-boop</a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div>© 2026 Kevin</div>
+    <div class="footer-links">
+      <a href="mailto:91cjwapc@gmail.com">91cjwapc@gmail.com</a>
+      <a href="https://github.com/Kevinsssss-boop" target="_blank" rel="noopener">github.com/Kevinsssss-boop</a>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/site.js" defer></script>
+</body>
+</html>

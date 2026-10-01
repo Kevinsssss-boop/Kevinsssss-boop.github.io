@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title data-zh="合同字段提取工具 — 江学文" data-en="Contract Field Extractor — Kevin Jiang">合同字段提取工具 — 江学文</title>
-<meta name="description" content="批量读取 PDF 合同，自动抽取 40 多个字段，在原文中高亮对应位置供逐条核对，最后导出成 Excel。">
+<title data-zh="合同字段提取工具 — Kevin" data-en="Contract Field Extractor — Kevin">合同字段提取工具 — Kevin</title>
+<meta name="description" content="批量读取 PDF 合同，自动抽取字段，在原文中高亮对应位置供逐条核对，最后导出 Excel。">
 <script>
 (function(){
   try {
@@ -24,10 +24,10 @@
 
 <header class="site-header">
   <div class="wrap">
-    <a class="brand" href="../index.html">Kevin <span>江学文</span></a>
+    <a class="brand" href="../index.html">Kevin</a>
     <nav class="nav">
-      <a href="../index.html#work" aria-current="page"><span class="zh">作品</span><span class="en">Work</span></a>
-      <a href="../index.html#about"><span class="zh">关于</span><span class="en">About</span></a>
+      <a href="../work.html" aria-current="page"><span class="zh">作品集</span><span class="en">Work</span></a>
+      <a href="../about.html"><span class="zh">关于</span><span class="en">About</span></a>
       <a href="../index.html#contact"><span class="zh">联系</span><span class="en">Contact</span></a>
     </nav>
     <div class="header-tools">
@@ -40,31 +40,22 @@
 <main>
 
   <section class="wrap proj-hero">
-    <a class="back-link" href="../index.html#work">← <span class="zh">返回作品</span><span class="en">All work</span></a>
+    <a class="back-link" href="../work.html">← <span class="zh">返回作品集</span><span class="en">All work</span></a>
     <h1><span class="zh">合同字段提取工具</span><span class="en">Contract Field Extractor</span></h1>
     <p class="lede">
-      <span class="zh">一批多语种劳动合同需要录入员工系统。人工做法是一份份打开 PDF，找到姓名、薪资、
-        银行账号、试用期等字段，逐条敲进表格。这个工具把「找到」自动化，把「确认」留给人。</span>
-      <span class="en">A batch of multilingual employment contracts had to be entered into an HR system. Manually that means
-        opening each PDF, hunting down name, salary, bank details, probation period, and typing them in. This tool automates
-        the <em>finding</em> and leaves the <em>verifying</em> to a human.</span>
+      <span class="zh">批量读取多语种劳动合同 PDF，自动抽取字段并<strong>在原文中高亮对应位置</strong>，
+        让人只需「看一眼」就能完成核对，最后导出成 Excel 台账。</span>
+      <span class="en">Batch-reads multilingual employment-contract PDFs, extracts fields and <strong>highlights each one in the
+        source</strong> so verification is a glance rather than a search — then exports a spreadsheet.</span>
     </p>
     <dl class="proj-meta">
       <div>
-        <dt><span class="zh">类型</span><span class="en">Type</span></dt>
-        <dd><span class="zh">内部桌面应用 · 源码不公开</span><span class="en">Internal desktop app · source private</span></dd>
-      </div>
-      <div>
         <dt><span class="zh">技术栈</span><span class="en">Stack</span></dt>
-        <dd>Electron · React · TypeScript · Ant Design · Zustand · sql.js · pdf.js</dd>
+        <dd>Electron · React · TypeScript · Ant Design · sql.js · pdf.js</dd>
       </div>
       <div>
-        <dt><span class="zh">我的角色</span><span class="en">My role</span></dt>
-        <dd><span class="zh">缺陷修复与可靠性加固</span><span class="en">Bug fixing &amp; reliability</span></dd>
-      </div>
-      <div>
-        <dt><span class="zh">规模</span><span class="en">Size</span></dt>
-        <dd><span class="zh">主进程约 2,100 行 · 渲染进程约 2,100 行</span><span class="en">~2,100 lines main · ~2,100 lines renderer</span></dd>
+        <dt><span class="zh">形态</span><span class="en">Form</span></dt>
+        <dd><span class="zh">内部桌面应用（源码不公开）</span><span class="en">Internal desktop app (source private)</span></dd>
       </div>
     </dl>
   </section>
@@ -72,139 +63,179 @@
   <section class="wrap section">
     <div class="prose">
 
-      <h2><span class="zh">设计上最关键的一个决定</span><span class="en">The key design decision</span></h2>
+      <h2><span class="zh">项目背景</span><span class="en">Background</span></h2>
       <p>
-        <span class="zh"><strong>不让人去核对一张表格，而是让人核对 PDF 原文。</strong>
-          自动提取的字段一定会错，问题是怎么让错误被发现得足够快。如果只给出一张「字段 → 值」的结果表，
-          复核的人必须回头翻 PDF 才能判断对不对，而这正是最慢的一步。</span>
-        <span class="en"><strong>Reviewers verify the PDF, not a table.</strong> Extracted fields will be wrong sometimes;
-          the real question is how fast a wrong value gets noticed. If all you get is a field-to-value table, the reviewer
-          has to go back to the PDF to check anything — which is exactly the slow part.</span>
+        <span class="zh">一批多语种劳动合同需要录入员工系统。人工做法的瓶颈不在「录入」，
+          而在「查找」——每份合同要翻到对应条款，找出姓名、薪资、银行账号、试用期等几十个字段的位置，
+          然后把值抄进表格。合同的排版各不相同，同一个字段在一份里出现在第 2 页，在另一份里可能在第 7 页。</span>
+        <span class="en">A batch of multilingual employment contracts had to be entered into an HR system. The bottleneck
+          isn't typing — it's finding. Each contract has to be paged through to locate name, salary, bank details, probation
+          period and dozens more. Layouts differ, so a field on page 2 in one contract might be on page 7 in another.</span>
       </p>
       <p>
-        <span class="zh">所以这个工具在右侧显示 PDF 原文，选中某个字段就在原文里高亮它的位置，两边联动。
-          复核从「翻文件」变成「看一眼」。同一个思路也用在校验上：字段值改完立刻重跑校验规则，
-          不符合预期格式的当场标黄并说明期望值。</span>
-        <span class="en">So the app shows the source PDF alongside the fields and highlights the matched text, keeping the two
-          in sync. Checking goes from "find the document" to "glance right". The same idea drives validation: editing a value
-          re-runs the rules immediately and flags anything unexpected, with the expected format spelled out.</span>
+        <span class="zh">所以这个工具的定位很明确：<strong>把「找到」自动化，把「确认」留给人</strong>。
+          自动提取一定会有错，设计目标不是消除错误，而是让错误被发现的成本尽可能低。</span>
+        <span class="en">So the tool has one clear job: <strong>automate the finding, leave the confirming to a person</strong>.
+          Extraction will sometimes be wrong. The design goal isn't eliminating errors — it's making an error cheap to notice.</span>
       </p>
 
-      <h2><span class="zh">完整流程</span><span class="en">The pipeline</span></h2>
+      <h2><span class="zh">核心功能</span><span class="en">Core features</span></h2>
       <div class="table-wrap">
         <table>
           <thead>
             <tr>
-              <th><span class="zh">步骤</span><span class="en">Step</span></th>
-              <th><span class="zh">做什么</span><span class="en">What happens</span></th>
+              <th><span class="zh">功能</span><span class="en">Feature</span></th>
+              <th><span class="zh">说明</span><span class="en">What it does</span></th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td><span class="zh">1 导入</span><span class="en">1 Import</span></td>
-              <td><span class="zh">批量拖入 PDF；加密文件单独弹出密码框</span><span class="en">Drop in PDFs in bulk; encrypted files prompt for a password</span></td>
+              <td><span class="zh">原文联动高亮</span><span class="en">Source-linked highlighting</span></td>
+              <td><span class="zh">右侧是字段表，左侧是 PDF 原文；选中任一字段，原文中对应的位置立即高亮。核对从「翻文件」变成「看一眼」</span><span class="en">Field table on the right, source PDF on the left. Selecting a field highlights its location in the document — checking becomes a glance instead of a search</span></td>
             </tr>
             <tr>
-              <td><span class="zh">2 取文本</span><span class="en">2 Extract text</span></td>
-              <td><span class="zh">先走 PDF 文字层（免费且快）；文字层为空再退回 OCR</span><span class="en">Use the PDF text layer first (free and fast); fall back to OCR only when it's empty</span></td>
+              <td><span class="zh">批量处理</span><span class="en">Batch processing</span></td>
+              <td><span class="zh">一次拖入多份 PDF，并发处理，逐份显示进度；加密文件单独弹出密码输入</span><span class="en">Drop in many PDFs at once, processed concurrently with per-file progress; encrypted files prompt for a password</span></td>
             </tr>
             <tr>
-              <td><span class="zh">3 分类</span><span class="en">3 Classify</span></td>
-              <td><span class="zh">先按关键词判断合同类型，判不出来才调模型</span><span class="en">Keyword rules first, model only when they're inconclusive</span></td>
+              <td><span class="zh">两级文本来源</span><span class="en">Two-tier text extraction</span></td>
+              <td><span class="zh">优先读取 PDF 文字层（免费且快），只有文字层为空时才回退到 OCR</span><span class="en">Reads the PDF text layer first (free and fast); falls back to OCR only when the text layer is empty</span></td>
             </tr>
             <tr>
-              <td><span class="zh">4 提取</span><span class="en">4 Extract</span></td>
-              <td><span class="zh">一次请求取回全部 40 多个字段</span><span class="en">One request returns all 40+ fields</span></td>
+              <td><span class="zh">分级分类</span><span class="en">Tiered classification</span></td>
+              <td><span class="zh">先用关键词规则判断合同类型，规则判不出来时才调用模型</span><span class="en">Keyword rules classify first; the model is only called when they're inconclusive</span></td>
             </tr>
             <tr>
-              <td><span class="zh">5 核对</span><span class="en">5 Review</span></td>
-              <td><span class="zh">人工逐条确认，改动即时重跑校验</span><span class="en">A human confirms each field; edits re-validate on the spot</span></td>
+              <td><span class="zh">即时校验</span><span class="en">Live validation</span></td>
+              <td><span class="zh">字段值一旦被修改就重跑校验规则，不符合预期格式的当场标出并说明期望值</span><span class="en">Editing a value re-runs the rules immediately, flagging anything unexpected and stating the expected format</span></td>
             </tr>
             <tr>
-              <td><span class="zh">6 导出</span><span class="en">6 Export</span></td>
-              <td><span class="zh">写成带校验列的 Excel，问题单元格高亮并附批注</span><span class="en">Write an Excel with validation columns, problem cells highlighted and annotated</span></td>
+              <td><span class="zh">Excel 导出</span><span class="en">Excel export</span></td>
+              <td><span class="zh">输出带校验列的台账，有问题的单元格高亮并附批注，可直接交给下一环节</span><span class="en">Produces a ledger with validation columns — problem cells highlighted and annotated — ready to hand off</span></td>
             </tr>
           </tbody>
         </table>
       </div>
 
-      <h2><span class="zh">我做了什么</span><span class="en">My part</span></h2>
+      <h2><span class="zh">技术架构</span><span class="en">Architecture</span></h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th><span class="zh">层级</span><span class="en">Layer</span></th>
+              <th><span class="zh">选型</span><span class="en">Choice</span></th>
+              <th><span class="zh">理由</span><span class="en">Why</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="zh">外壳</span><span class="en">Shell</span></td>
+              <td>Electron 31</td>
+              <td><span class="zh">需要读本地文件、调用外部服务、并且不经过浏览器上传——桌面应用最直接</span><span class="en">Needs local file access and outbound API calls without a browser upload step; a desktop app is the direct answer</span></td>
+            </tr>
+            <tr>
+              <td><span class="zh">数据库</span><span class="en">Database</span></td>
+              <td>sql.js（内存 SQLite）</td>
+              <td><span class="zh">免安装、免迁移；代价是整库驻留内存、写盘需显式导出</span><span class="en">No install, no migration; the cost is a fully in-memory database and explicit export to persist</span></td>
+            </tr>
+            <tr>
+              <td><span class="zh">PDF 渲染</span><span class="en">PDF rendering</span></td>
+              <td>pdf.js（Canvas）</td>
+              <td><span class="zh">要拿到每个文本项在页面上的位置，才能做高亮框；这是高亮功能的前提</span><span class="en">Highlighting needs each text item's on-page position, which is what pdf.js exposes</span></td>
+            </tr>
+            <tr>
+              <td><span class="zh">字段提取</span><span class="en">Field extraction</span></td>
+              <td><span class="zh">大模型（OpenAI 兼容接口）</span><span class="en">LLM (OpenAI-compatible API)</span></td>
+              <td><span class="zh">多语种、版式不固定的合同用规则抽取不现实，模型一次请求返回全部字段</span><span class="en">Rule-based extraction doesn't hold up across languages and layouts; one model call returns every field</span></td>
+            </tr>
+            <tr>
+              <td><span class="zh">扫描件</span><span class="en">Scanned documents</span></td>
+              <td><span class="zh">OCR 服务（仅在需要时）</span><span class="en">OCR service (only when needed)</span></td>
+              <td><span class="zh">有文字层的 PDF 直接读，避免不必要的调用成本和等待</span><span class="en">PDFs with a text layer are read directly, avoiding unnecessary cost and latency</span></td>
+            </tr>
+            <tr>
+              <td><span class="zh">界面</span><span class="en">UI</span></td>
+              <td>React + Ant Design + Zustand</td>
+              <td><span class="zh">表格、表单、上传这些组件用成熟库，把时间留给提取与校对逻辑</span><span class="en">Tables, forms and upload come from a mature library, leaving time for extraction and review logic</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
       <p>
-        <span class="zh">功能是完整的，问题出在「出错的时候」。我系统地把失败路径走了一遍，修掉的是这些——</span>
-        <span class="en">The features were all there; the problems were in what happened when things went wrong.
-          I went through the failure paths systematically and fixed these —</span>
+        <span class="zh">处理链路分六步：<strong>导入 → 取文本 → 分类 → 提取 → 核对 → 导出</strong>。
+          每一步都能独立失败，而失败时的状态回退是这套代码里最需要小心的地方——
+          最初版本的问题几乎全部集中在「出错之后」，而不是「正常流程」。</span>
+        <span class="en">The pipeline has six steps: <strong>import → text → classify → extract → review → export</strong>.
+          Each can fail independently, and rolling back cleanly on failure is the delicate part — nearly every bug in the
+          original version lived in the failure paths, not the happy path.</span>
       </p>
-      <ul>
-        <li>
-          <span class="zh"><strong>密码错误被当成「处理成功」。</strong>解密失败的异常消息里含「解密」二字，
-            而判断能否自动重试的代码找的是「加密」——一字之差，这个错误就被当成可重试的临时故障吞掉了。
-            文件最终被标记为完成并写入一整批空字段，用户看到的是成功。
-            改成用异常类型判断，需要人工介入的错误一律原样上抛。</span>
-          <span class="en"><strong>A wrong password was treated as success.</strong> The decryption error message contained
-            "decrypt" while the retry logic looked for "encrypt" — one character apart. So the error was swallowed as a
-            transient failure, the file was marked complete, and a full set of empty fields got written. The user saw success.
-            Now these are distinguished by exception type, and anything needing a human is raised as-is.</span>
-        </li>
-        <li>
-          <span class="zh"><strong>重提一次，人工修正值全丢。</strong>原流程是「读旧值 → 删掉旧记录 → 调模型」，
-            模型一失败就走异常分支，读出来的旧值当场丢弃；重试时表已经空了，读回来自然什么都没有。
-            改成模型调用全部成功后才替换旧记录。</span>
-          <span class="en"><strong>Reprocessing wiped every manual correction.</strong> The order was "read old values → delete
-            old rows → call the model". Any model failure jumped to the error branch and dropped the values it had just read;
-            by the retry the table was already empty. Now the old rows are replaced only after every model call succeeds.</span>
-        </li>
-        <li>
-          <span class="zh"><strong>配置页会把密钥存坏。</strong>界面把 API Key 显示成掩码，保存时又把掩码原样写回，
-            于是真正的密钥被一串圆点覆盖，且不可恢复。改成掩码值直接忽略不写，并把两个表单实例拆开
-            （原先两张卡片共用一个表单实例，互相污染）。</span>
-          <span class="en"><strong>The settings page corrupted API keys.</strong> The UI showed a masked key and then wrote that
-            mask straight back, overwriting the real secret with dots — unrecoverable. Masked values are now skipped on write,
-            and the two cards no longer share one form instance (which was letting them contaminate each other).</span>
-        </li>
-        <li>
-          <span class="zh"><strong>全部失败时进度条停在 0%。</strong>失败路径只发了错误事件，而计数器是在完成事件里推进的，
-            于是整整一批文件全失败，界面显示的一直是「刚开始」。现在失败同样发出完成事件并计入失败数。</span>
-          <span class="en"><strong>A fully failed batch showed 0% progress.</strong> The failure path only emitted an error event,
-            while the progress counter advanced on completion events — so a batch where everything failed looked like it had
-            just started. Failures now emit a completion too, counted in the failed total.</span>
-        </li>
-        <li>
-          <span class="zh"><strong>双击图标会丢数据。</strong>开两个实例时，各自持有一份内存数据库，
-            退出时全量覆盖同一个文件，后关的那个把前一个的校对成果整个抹掉。加了单实例锁。</span>
-          <span class="en"><strong>Double-clicking the icon lost data.</strong> Two instances each held their own in-memory
-            database and wrote the whole file back on exit — the last one to close erased the other's review work.
-            Added a single-instance lock.</span>
-        </li>
-        <li>
-          <span class="zh"><strong>服务挂起会拖死整批。</strong>模型和 OCR 请求没有超时，服务端不响应时并发槽位永久占用，
-            只能杀进程。补上超时。</span>
-          <span class="en"><strong>A hung service stalled the batch.</strong> Model and OCR calls had no timeout, so an
-            unresponsive server held the concurrency slots forever and the only way out was killing the process. Timeouts added.</span>
-        </li>
-        <li>
-          <span class="zh"><strong>导出的两列永远是空的。</strong>导出时按固定列清单写入，但其中两列的取值逻辑
-            从未被接上，于是每次导出的这两列都是空值，且不报错。</span>
-          <span class="en"><strong>Two export columns were always empty.</strong> The exporter wrote a fixed column list, but two
-            of them never had their value lookup wired up — so they came out blank every time, silently.</span>
-        </li>
-      </ul>
+
+      <h2><span class="zh">界面截图</span><span class="en">Screenshots</span></h2>
+      <figure class="shot">
+        <img src="../assets/img/contract-review.png" alt="核对界面：左侧 PDF 原文，右侧字段表">
+        <figcaption>
+          <span class="zh">核对界面——左侧 PDF 原文、右侧字段表，中间的「提取值 / 修正值 / 校验」三列构成完整的复核闭环。
+            截图中的数据为合成样例。</span>
+          <span class="en">Review view — source PDF on the left, field table on the right, with extracted value, manual correction
+            and validation status forming the review loop. Data shown is synthetic.</span>
+        </figcaption>
+      </figure>
+      <figure class="shot">
+        <img src="../assets/img/contract-files.png" alt="文件管理：批量导入、状态与错误信息">
+        <figcaption>
+          <span class="zh">文件管理——批量导入后的状态一览。失败的文件会显示具体原因（例如「PDF 密码错误」），
+            而不是笼统的「处理失败」。</span>
+          <span class="en">File management — status after a batch import. Failed files state the actual reason (for example a wrong
+            PDF password) rather than a generic failure.</span>
+        </figcaption>
+      </figure>
+
+      <h2><span class="zh">量化成果</span><span class="en">Outcomes</span></h2>
+      <div class="metrics">
+        <div class="metric">
+          <div class="n">9</div>
+          <div class="k"><span class="zh">类缺陷修复</span><span class="en">classes of bugs fixed</span></div>
+        </div>
+        <div class="metric">
+          <div class="n">6</div>
+          <div class="k"><span class="zh">类错误被静默吞掉</span><span class="en">of them were silent failures</span></div>
+        </div>
+        <div class="metric">
+          <div class="n">11</div>
+          <div class="k"><span class="zh">个测试用例</span><span class="en">test cases</span></div>
+        </div>
+        <div class="metric">
+          <div class="n">40+</div>
+          <div class="k"><span class="zh">个提取字段</span><span class="en">fields extracted per contract</span></div>
+        </div>
+      </div>
+      <p>
+        <span class="zh">最典型的一类是<strong>「静默失败」</strong>：程序出错了，但界面上显示成功。
+          比如密码错误会被当成可重试的临时故障吞掉，文件最终被标记为「已完成」并写入一整批空字段；
+          重提时会先删旧记录再调模型，模型一失败，此前所有人工修正值净丢，而文件仍显示成功。
+          这类问题比直接崩溃更危险——崩溃至少会让人知道出了事。</span>
+        <span class="en">The dominant pattern was <strong>silent failure</strong> — something went wrong and the UI said success.
+          A wrong password was swallowed as a retryable error, so the file was marked complete with a full set of empty fields.
+          Reprocessing deleted the old records before calling the model, so any model failure destroyed every manual correction
+          while still reporting success. These are more dangerous than a crash: a crash at least announces itself.</span>
+      </p>
 
       <h2><span class="zh">数据流向</span><span class="en">Where the data goes</span></h2>
       <div class="note note-warn">
-        <span class="zh"><strong>这个工具会把合同全文发给外部服务：</strong>文本送给大模型做字段抽取，
+        <span class="zh"><strong>这个工具会把合同内容发给外部服务。</strong>文本送给大模型做字段抽取，
           扫描件的整页图片送给 OCR 服务。所有数据保存在本机，但这两次外发是提取功能的前提。
-          内部工具部署时会先说明这一点。</span>
-        <span class="en"><strong>This tool sends contract text to external services:</strong> the text goes to an LLM for field
+          任何要在内部部署它的人，都应该先知道这一点。</span>
+        <span class="en"><strong>This tool sends contract content to external services.</strong> Text goes to an LLM for field
           extraction, and scanned pages go as images to an OCR provider. Everything is stored locally, but those two calls are
           what makes extraction possible. Anyone deploying it internally should know that up front.</span>
       </div>
 
-      <h2><span class="zh">为什么源码不公开</span><span class="en">Why the source is private</span></h2>
+      <h2><span class="zh">关于源码</span><span class="en">About the source</span></h2>
       <p>
-        <span class="zh">字段体系、校验规则和提示词都是围绕真实业务口径设计的，属于内部信息。
-          这里展示的是工程判断，不含业务数据。</span>
-        <span class="en">The field schema, validation rules and prompts are built around a real business framework and count
-          as internal. What's here is the engineering judgement, with no business data.</span>
+        <span class="zh">字段体系、校验规则与提示词围绕真实业务口径设计，属于内部信息，因此源码不公开。
+          以上展示的是工程判断，不含业务数据。</span>
+        <span class="en">The field schema, validation rules and prompts are built around a real business framework and count as
+          internal, so the source is not public. What's here is the engineering judgement, with no business data.</span>
       </p>
 
     </div>
@@ -214,10 +245,10 @@
 
 <footer class="site-footer">
   <div class="wrap">
-    <div>© 2026 Kevin 江学文</div>
+    <div>© 2026 Kevin</div>
     <div class="footer-links">
-      <a href="../index.html#work"><span class="zh">返回作品</span><span class="en">All work</span></a>
-      <a href="https://github.com/Kevinsssss-boop" target="_blank" rel="noopener">GitHub</a>
+      <a href="../work.html"><span class="zh">返回作品集</span><span class="en">All work</span></a>
+      <a href="https://github.com/Kevinsssss-boop" target="_blank" rel="noopener">github.com/Kevinsssss-boop</a>
     </div>
   </div>
 </footer>

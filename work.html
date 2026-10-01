@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title data-zh="Kevin — 作品集" data-en="Kevin — Portfolio">Kevin — 作品集</title>
-<meta name="description" content="Kevin 的作品集：数据工具、桌面应用与网页小游戏。">
+<title data-zh="作品集 — Kevin" data-en="Work — Kevin">作品集 — Kevin</title>
+<meta name="description" content="Kevin 的五个作品：薪酬合规审阅工具、合同字段提取工具、贪吃蛇大作战、K记、LongChainRAG。">
 <script>
 (function(){
   try {
@@ -26,9 +26,9 @@
   <div class="wrap">
     <a class="brand" href="index.html">Kevin</a>
     <nav class="nav">
-      <a href="work.html"><span class="zh">作品集</span><span class="en">Work</span></a>
+      <a href="work.html" aria-current="page"><span class="zh">作品集</span><span class="en">Work</span></a>
       <a href="about.html"><span class="zh">关于</span><span class="en">About</span></a>
-      <a href="#contact"><span class="zh">联系</span><span class="en">Contact</span></a>
+      <a href="index.html#contact"><span class="zh">联系</span><span class="en">Contact</span></a>
     </nav>
     <div class="header-tools">
       <button class="icon-btn" id="lang-toggle" type="button" aria-label="Switch to English">EN</button>
@@ -39,46 +39,17 @@
 
 <main>
 
-  <section class="wrap hero">
-    <div class="hero-grid">
-      <img class="avatar" src="assets/img/avatar.jpg" alt="Kevin" width="168" height="168">
-
-      <div>
-        <h1>Kevin</h1>
-        <p class="role">
-          <span class="zh">数据分析 · 广东财经大学</span>
-          <span class="en">Data Analytics · Guangdong University of Finance &amp; Economics</span>
-        </p>
-        <p class="lede">
-          <span class="zh">我做的事情大多围绕同一件事：把重复的手工流程变成可复用的工具。
-            实习里遇到需要人工逐条处理的表格和文档，先问能不能自动化；能用脚本解决的不写系统，
-            需要多人协作和留痕的才做成工具。</span>
-          <span class="en">Most of what I build comes back to one thing: turning repetitive manual work into
-            reusable tools. When an internship handed me spreadsheets and documents that had to be processed
-            by hand, the first question was whether it could be automated — a script when a script is enough,
-            a real tool only when several people need to work together and leave a trail.</span>
-        </p>
-        <div class="hero-tags">
-          <span class="tag">Python</span>
-          <span class="tag">SQL</span>
-          <span class="tag">Excel</span>
-          <span class="tag">Flask</span>
-          <span class="tag">React</span>
-          <span class="tag">TypeScript</span>
-        </div>
-      </div>
-    </div>
+  <section class="wrap" style="padding:52px 0 8px;">
+    <h1 style="margin:0 0 10px;font-size:clamp(26px,4vw,34px);letter-spacing:-.02em;">
+      <span class="zh">作品集</span><span class="en">Work</span>
+    </h1>
+    <p style="margin:0;color:var(--text-muted);font-size:16px;max-width:62ch;">
+      <span class="zh">五个项目。前三个是为真实业务场景写的工具，后两个可以直接在浏览器里打开。</span>
+      <span class="en">Five projects. The first three were built for real business workflows; the last two run right here in the browser.</span>
+    </p>
   </section>
 
-  <section class="wrap section" id="work">
-    <div class="section-head">
-      <h2><span class="zh">精选作品</span><span class="en">Selected work</span></h2>
-      <p>
-        <span class="zh">三个跟数据分析方向最相关的项目。<a href="work.html">查看全部作品 →</a></span>
-        <span class="en">The three most relevant to data analytics. <a href="work.html">See all work →</a></span>
-      </p>
-    </div>
-
+  <section class="wrap section" style="border-top:0;">
     <div class="cards">
 
       <a class="card" href="projects/payroll.html">
@@ -123,23 +94,54 @@
         </div>
       </a>
 
-    </div>
-  </section>
+      <div class="card">
+        <a class="card-banner" href="demos/snake/" target="_blank" rel="noopener" style="text-decoration:none;">
+          <img src="assets/img/snake-home.png" alt="">
+        </a>
+        <div class="card-body">
+          <h3><a class="stretch" href="demos/snake/" target="_blank" rel="noopener">
+            <span class="zh">贪吃蛇大作战</span><span class="en">Snake Battle</span>
+          </a></h3>
+          <p>
+            <span class="zh">纯 JavaScript + Canvas 写的浏览器游戏：16 套皮肤、4 种模式、10 条各有性格的 AI 蛇。零运行时依赖。</span>
+            <span class="en">A browser game in plain JavaScript and Canvas: 16 skins, 4 modes, 10 AI snakes with distinct personalities. Zero runtime dependencies.</span>
+          </p>
+          <div class="tags">
+            <span class="tag">JavaScript</span><span class="tag">Canvas</span><span class="tag">Web Audio</span>
+            <span class="tag tag-accent">在线 demo</span>
+          </div>
+          <div class="card-links">
+            <a href="demos/snake/" target="_blank" rel="noopener"><span class="zh">开始游戏 ↗</span><span class="en">Play ↗</span></a>
+            <a href="https://github.com/Kevinsssss-boop/snake-game" target="_blank" rel="noopener">
+              <span class="zh">源码 ↗</span><span class="en">Source ↗</span>
+            </a>
+          </div>
+        </div>
+      </div>
 
-  <section class="wrap section" id="contact">
-    <div class="section-head">
-      <h2><span class="zh">联系</span><span class="en">Contact</span></h2>
-      <p>
-        <span class="zh">对哪个项目有疑问，或者想聊聊，都欢迎直接找我。</span>
-        <span class="en">Questions about any project, or just want to talk — reach out any time.</span>
-      </p>
-    </div>
+      <div class="card">
+        <a class="card-banner" href="demos/k-note/" target="_blank" rel="noopener" style="text-decoration:none;">
+          <img src="assets/img/k-note-home.png" alt="">
+        </a>
+        <div class="card-body">
+          <h3><a class="stretch" href="demos/k-note/" target="_blank" rel="noopener">K记 · <span class="zh">个人记账</span><span class="en">Personal Ledger</span></a></h3>
+          <p>
+            <span class="zh">两级分类的记账应用，带预算提醒和图表统计。桌面端用 Electron，同一份代码在浏览器里用 localStorage 也能跑。</span>
+            <span class="en">A bookkeeping app with two-level categories, budget alerts and charts. Electron on the desktop — the same code runs in a browser on localStorage.</span>
+          </p>
+          <div class="tags">
+            <span class="tag">Electron</span><span class="tag">React</span><span class="tag">Ant Design</span><span class="tag">Recharts</span>
+            <span class="tag tag-accent">在线 demo</span>
+          </div>
+          <div class="card-links">
+            <a href="demos/k-note/" target="_blank" rel="noopener"><span class="zh">打开应用 ↗</span><span class="en">Open app ↗</span></a>
+            <a href="https://github.com/Kevinsssss-boop/heima-bookkeeping" target="_blank" rel="noopener">
+              <span class="zh">源码 ↗</span><span class="en">Source ↗</span>
+            </a>
+          </div>
+        </div>
+      </div>
 
-    <div class="hero-actions">
-      <a class="btn btn-primary" href="mailto:91cjwapc@gmail.com">91cjwapc@gmail.com</a>
-      <a class="btn btn-ghost" href="https://github.com/Kevinsssss-boop" target="_blank" rel="noopener">
-        <span class="zh">GitHub · Kevinsssss-boop</span><span class="en">GitHub · Kevinsssss-boop</span>
-      </a>
     </div>
   </section>
 
