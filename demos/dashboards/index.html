@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-lang="zh" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-zh="数据可视化 — Kevin" data-en="Data Visualization — Kevin">数据可视化 — Kevin</title>
+<meta name="description" content="两张销售数据仪表盘：每日营业情况监控、月度销售数据监控。">
+<script>
+(function(){
+  try {
+    var t = localStorage.getItem('portfolio-theme');
+    if (!t) t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', t);
+    var l = localStorage.getItem('portfolio-lang');
+    if (!l) l = (navigator.language || 'zh').toLowerCase().indexOf('zh') === 0 ? 'zh' : 'en';
+    document.documentElement.setAttribute('data-lang', l);
+    document.documentElement.setAttribute('lang', l === 'zh' ? 'zh-CN' : 'en');
+  } catch (e) {}
+})();
+</script>
+<link rel="stylesheet" href="../../assets/css/style.css">
+<style>
+  /* 这两张是竖长图（1366×2000 / 1500×2800），不适合当卡片头图（那个只有 132px 高，
+     会把 90% 的内容裁掉）。这里整幅铺开按容器宽度自适应，直接滚动就能读完。
+     点击任意一张在新标签页打开原始尺寸的 PNG —— 图上文字很密，放大才看得清。 */
+  .dash { margin: 0 0 64px; }
+  .dash:last-child { margin-bottom: 0; }
+
+  .dash-head { margin-bottom: 18px; }
+  .dash-head h2 { margin: 0 0 8px; font-size: 20px; letter-spacing: -.01em; font-weight: 700; }
+  .dash-head p { margin: 0 0 14px; color: var(--text-muted); font-size: 15px; line-height: 1.75; max-width: 70ch; }
+
+  .dash-shot { display: block; }
+  .dash-shot img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    transition: border-color .18s ease;
+  }
+  .dash-shot:hover img { border-color: var(--border-strong); }
+
+  .dash-hint { margin: 10px 0 0; color: var(--text-faint); font-size: 13.5px; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="../../index.html">Kevin</a>
+    <nav class="nav">
+      <a href="../../work.html"><span class="zh">作品集</span><span class="en">Work</span></a>
+      <a href="../../about.html"><span class="zh">关于</span><span class="en">About</span></a>
+      <a href="../../index.html#contact"><span class="zh">联系</span><span class="en">Contact</span></a>
+    </nav>
+    <div class="header-tools">
+      <button class="icon-btn" id="lang-toggle" type="button" aria-label="Switch to English">EN</button>
+      <button class="icon-btn" id="theme-toggle" type="button" aria-label="切换深色模式"></button>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <section class="wrap" style="padding:44px 0 8px;">
+    <a class="back-link" href="../../work.html">← <span class="zh">返回作品集</span><span class="en">All work</span></a>
+    <h1 style="margin:0 0 12px;font-size:clamp(26px,4vw,34px);letter-spacing:-.02em;">
+      <span class="zh">数据可视化仪表盘</span><span class="en">Data Visualization Dashboards</span>
+    </h1>
+    <p class="lede" style="margin:0;color:var(--text-muted);font-size:16px;line-height:1.75;max-width:70ch;">
+      <span class="zh">两张按业务问题组织的监控看板。做的时候主要在处理三类事：把不同粒度的数据对齐到同一张图上、
+        用环比而不是绝对值说明变化、以及在指标变动的同一屏里给出可以追下去的下钻维度。
+        数据来自课程实训数据集，不是真实业务数据。</span>
+      <span class="en">Two monitoring dashboards organised around business questions. Three things took most of the
+        effort: aligning data at different grains onto one view, describing change by period-over-period rather than
+        absolute values, and putting the drill-down dimensions that explain a movement on the same screen.
+        Data is from a course dataset, not real business data.</span>
+    </p>
+  </section>
+
+  <section class="wrap section">
+
+    <figure class="dash">
+      <figcaption class="dash-head">
+        <h2><span class="zh">每日营业情况数据监控</span><span class="en">Daily Operations Monitoring</span></h2>
+        <p>
+          <span class="zh">外卖业务的单日经营看板。顶部一行是总览指标（GMV、商家实收、曝光人数、进店人数、
+            下单人数、无效订单数、商户补贴、平台补贴、Cpc 总费用），往下依次是逐日明细表、配送地理分布、
+            新老客与平台/门店占比、每日营收与流量趋势、投放费用与 GMV 的关系、订单量分布。
+            其中投放那一块做成了散点加拟合线——Cpc 花到多少开始不划算，看斜率比看单点数字直观。</span>
+          <span class="en">A single-day operations view for a food-delivery business. The top row holds the headline
+            metrics (GMV, merchant revenue, impressions, store visits, orders, invalid orders, merchant and platform
+            subsidies, total Cpc spend); below it are the daily detail table, delivery geography, new-vs-returning and
+            platform/store splits, revenue and traffic trends, spend-versus-GMV, and order distribution. The spend panel
+            is a scatter with a fitted line — the slope shows where Cpc stops paying for itself better than any single
+            number does.</span>
+        </p>
+        <div class="tags">
+          <span class="tag">Tableau</span><span class="tag">Excel</span><span class="tag">地图散点</span><span class="tag">回归拟合</span>
+        </div>
+      </figcaption>
+      <a class="dash-shot" href="../../assets/img/dash-daily-ops.png" target="_blank" rel="noopener">
+        <img src="../../assets/img/dash-daily-ops.png" alt="每日营业情况数据监控仪表盘：总览指标、逐日明细、配送分布地图、占比环图、营收与流量趋势、投放散点、订单分布">
+      </a>
+      <p class="dash-hint"><span class="zh">点击图片在新标签页打开原始尺寸</span><span class="en">Click to open the full-size image in a new tab</span></p>
+    </figure>
+
+    <figure class="dash">
+      <figcaption class="dash-head">
+        <h2><span class="zh">月度销售数据监控</span><span class="en">Monthly Sales Monitoring</span></h2>
+        <p>
+          <span class="zh">月度维度的成交看板，重点在「哪些区域在涨、哪些在跌」。分成三个层次：
+            顶部是客单价与区域占比；中间按省份列出成交金额、成交客户数、客单价三项及其环比，
+            用左右分向的条形图让增幅和跌幅一眼可分；底部是按「期数」（1/3/6/9/12/18 期）切的明细与趋势。
+            环比用颜色深浅而不是只写百分比——扫描整列时，颜色比数字先被看到。</span>
+          <span class="en">A monthly transaction view, focused on which regions are growing and which are not. Three
+            levels: unit price and regional split at the top; per-province transaction value, customer count and unit
+            price with period-over-period change in the middle, using back-to-back bars so growth and decline separate
+            at a glance; and a breakdown and trend by contract term (1/3/6/9/12/18 periods) at the bottom.
+            Period-over-period change is encoded by colour depth rather than the number alone — scanning a column,
+            the colour registers before the digits do.</span>
+        </p>
+        <div class="tags">
+          <span class="tag">Tableau</span><span class="tag">双轴对比</span><span class="tag">环比分析</span><span class="tag">堆叠面积图</span>
+        </div>
+      </figcaption>
+      <a class="dash-shot" href="../../assets/img/dash-monthly-sales.png" target="_blank" rel="noopener">
+        <img src="../../assets/img/dash-monthly-sales.png" alt="月度销售数据监控仪表盘：客单价、区域成交占比、省份成交明细与环比、区域成交趋势、期数成交明细与趋势" loading="lazy">
+      </a>
+      <p class="dash-hint"><span class="zh">点击图片在新标签页打开原始尺寸</span><span class="en">Click to open the full-size image in a new tab</span></p>
+    </figure>
+
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div>© 2026 Kevin</div>
+    <div class="footer-links">
+      <a href="../../work.html"><span class="zh">返回作品集</span><span class="en">All work</span></a>
+      <a href="https://github.com/Kevinsssss-boop" target="_blank" rel="noopener">github.com/Kevinsssss-boop</a>
+    </div>
+  </div>
+</footer>
+
+<script src="../../assets/js/site.js" defer></script>
+</body>
+</html>
